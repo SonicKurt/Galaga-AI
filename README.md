@@ -7,6 +7,6 @@ This is the home for the development of Galaga AI. We all know and love the orig
 
 This project was made for CS-4430 Machine Learning and Intelligent Agents course at Cedarville University.
 ## Copyrights
-We do not have the original copyright for the Galaga game or name. 
+We do not own the original copyright for the Galaga game or name. 
 
 Galaga; game, by Namco, Ltd., 1982
