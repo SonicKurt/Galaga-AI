@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1352264490181194408}
   - component: {fileID: 1352264490181194415}
   - component: {fileID: 1352264490181194414}
+  - component: {fileID: 7066546235161977277}
   m_Layer: 0
   m_Name: Butterfly
   m_TagString: Butterfly
@@ -32,7 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1352264490181194408
 MeshFilter:
@@ -97,3 +98,15 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7066546235161977277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1352264490181194413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddca33b8a6b7ba145a60e5cb6a9d9ac7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

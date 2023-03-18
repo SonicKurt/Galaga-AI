@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class SpawnerController : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class SpawnerController : MonoBehaviour
     public GameObject stringerObject;
     public GameObject goeiObject;
     public GameObject bossGalagaObject;
+
+    public Transform[] loadSpawners;
 
     private Vector3[,] grid;
 
@@ -52,22 +55,6 @@ public class SpawnerController : MonoBehaviour
 
                 grid[i, j] = spawnPos;
 
-                /*
-                switch (enemy)
-                {
-                    case EnemyType.Goei:
-                        SpawnGoei(spawnPos);
-                        break;
-
-                    case EnemyType.Stringer:
-                        SpawnStringer(spawnPos);
-                        break;
-
-                    case EnemyType.BossGalaga:
-                        SpawnBossGalaga(spawnPos);
-                        break;
-                }
-                */
                 startingPosX += gapSize;
             }
         }
@@ -79,6 +66,8 @@ public class SpawnerController : MonoBehaviour
             switch (enemyState)
             {
                 case LoadEnemyState.Phase1:
+                    int goeiCounter = 4;
+                    int stringerCounter = 4;
                     for (int i = 0; i < 4; i++)
                     {
                         if (i < 2)
@@ -91,6 +80,7 @@ public class SpawnerController : MonoBehaviour
                             SpawnGoei(grid[i, 5]);
                         }
                     }
+                    
                     enemyState = LoadEnemyState.Phase2;
                     break;
                 case LoadEnemyState.Phase2:
@@ -150,8 +140,11 @@ public class SpawnerController : MonoBehaviour
 
     void SpawnGoei(Vector3 spawnPos)
     {
-        GameObject goei = Instantiate(goeiObject, spawnPos, Quaternion.identity);
+        //GameObject goei = Instantiate(goeiObject, spawnPos, Quaternion.identity);
+        GameObject goei = Instantiate(goeiObject, loadSpawners[0].position, Quaternion.identity);
         goei.transform.SetParent(transform);
+        AlienController alienController = goei.GetComponent<AlienController>();
+        alienController.SpawnPos = spawnPos;
     }
 
     void SpawnStringer(Vector3 spawnPos)
