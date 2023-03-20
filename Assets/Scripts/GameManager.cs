@@ -1,3 +1,16 @@
+/**********************************************************
+ * Game Manager
+ * 
+ * Summary: Manages the game's flow.
+ * 
+ * Author: Kurt Campbell
+ * Date: 19 March 2023
+ * 
+ * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
+ * Donald Osborn.
+ * All rights reserved.
+ *********************************************************/
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
