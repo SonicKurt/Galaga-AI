@@ -443,4 +443,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementValue: 0
-  movementSpeed: 0
+  movementSpeed: 5
