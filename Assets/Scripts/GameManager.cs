@@ -29,8 +29,10 @@ public class GameManager : MonoBehaviour
     public int initialLives;
 
     private int playerCount;
+
+    [SerializeField]
     private int currentPlayer;
-    private int currentStage;
+    private int[] currentStage;
 
     private int[] scores;
     private int highScore;
@@ -71,8 +73,7 @@ public class GameManager : MonoBehaviour
             case GameState.PlayerSelect:
                 // Start the game with player one being up first.
                 MenuManager.Instance.UpdateHighScoreTextField(highScore);
-                currentPlayer = 1;
-                currentStage = 1;
+                currentPlayer = 1; 
                 break;
             case GameState.DisplayStageText:
                 // If scores and lives does not exist for the players,
@@ -83,8 +84,14 @@ public class GameManager : MonoBehaviour
 
                 if (lives == null) {
                     InitLives();
-                    Debug.Log(lives[currentPlayer - 1]);
+                    MenuManager.Instance.UpdateLiveCounterText(lives[currentPlayer - 1]);
                 }
+
+                // Initialize the stage counters.
+                InitStageCounters();
+
+                // Update the stage counter text field.
+                MenuManager.Instance.UpdateStageCounterText(currentStage[currentPlayer - 1]);
 
                 // Displays the current stage that the player is on.
                 // The MenuManager should consist of the text fields to display
@@ -142,6 +149,17 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Initialize the stage counters for each player.
+    /// </summary>
+    private void InitStageCounters() {
+        currentStage = new int[playerCount];
+
+        for (int i = 0; i < playerCount; i++) {
+            currentStage[i] = 1;
+        }
+    }
+
+    /// <summary>
     /// Reset the score for the current player.
     /// </summary>
     private void ResetScore() {
@@ -161,14 +179,14 @@ public class GameManager : MonoBehaviour
     private IEnumerator DisplayStage() {
         yield return new WaitForSeconds(1f);
 
-        if (currentStage == 1) {
+        if (currentStage[currentPlayer - 1] == 1) {
             MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
             MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
         }
 
         yield return new WaitForSeconds(3f);
 
-        MenuManager.Instance.UpdateCurrentStageTextField(currentStage);
+        MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
 
         SpawnPlayer();
 

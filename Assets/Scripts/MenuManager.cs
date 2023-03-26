@@ -30,6 +30,8 @@ public class MenuManager : MonoBehaviour
     public TextMeshProUGUI player2ScoreText;
     public TextMeshProUGUI currentPlayerText;
     public TextMeshProUGUI currentStageText;
+    public TextMeshProUGUI stageCounterText;
+    public TextMeshProUGUI liveCounterText;
 
     // Player input actions for the main menu.
     private PlayerInput playerInput;
@@ -48,7 +50,9 @@ public class MenuManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-       mainMenuPanel = GameObject.FindGameObjectWithTag("MainMenu");
+        mainMenuPanel = GameObject.FindGameObjectWithTag("MainMenu");
+        stageCounterText.gameObject.SetActive(false);
+        liveCounterText.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -78,6 +82,8 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
         DisableMainMenu();
         SceneManager.LoadScene(1);
+        stageCounterText.gameObject.SetActive(true);
+        liveCounterText.gameObject.SetActive(true);
         playerInput.enabled = false;
     }
 
@@ -89,6 +95,8 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
         DisableMainMenu();
         SceneManager.LoadScene(1);
+        stageCounterText.gameObject.SetActive(true);
+        liveCounterText.gameObject.SetActive(true);
         playerInput.enabled = false;
     }
 
@@ -127,6 +135,23 @@ public class MenuManager : MonoBehaviour
     /// <param name="stage"></param>
     public void UpdateCurrentStageTextField(int stage) {
         currentStageText.SetText("Stage " + stage);
+    }
+
+
+    /// <summary>
+    /// Update the live counter for a player.
+    /// </summary>
+    /// <param name="lives">The amount of lives the player has.</param>
+    public void UpdateLiveCounterText(int lives) {
+        liveCounterText.SetText(lives.ToString());
+    }
+
+    /// <summary>
+    /// Update the stage counter for the player.
+    /// </summary>
+    /// <param name="stage">The current stage the player is on.</param>
+    public void UpdateStageCounterText(int stage) {
+        stageCounterText.SetText(stage.ToString());
     }
 
     /// <summary>
