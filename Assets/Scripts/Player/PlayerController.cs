@@ -16,14 +16,6 @@ public class PlayerController : MonoBehaviour {
         Debug.Log(movementValue);
     }
 
-    void OnOnePlayerGame() {
-        Debug.Log("One player game!");
-    }
-
-    void OnTwoPlayerGame() {
-        Debug.Log("Two player game!");
-    }
-
     void OnPause() {
         Debug.Log("Game paused!");
     }

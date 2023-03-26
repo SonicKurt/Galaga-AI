@@ -49,14 +49,10 @@ public class SpawnerController : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.state == GameState.LoadEnemies)
-        {
-            SpawnAliens();
-            GameManager.Instance.UpdateGameState(GameState.EnemiesFall);
-        }
+       
     }
 
-    void SpawnAliens()
+    public void SpawnAliens()
     {
         // The first position of the grid.
         float startingPosX = gapSize * -4;
@@ -287,6 +283,8 @@ public class SpawnerController : MonoBehaviour
                     break;
             }
         }
+
+        GameManager.Instance.UpdateGameState(GameState.EnemiesFall);
     }
 
     /// <summary>

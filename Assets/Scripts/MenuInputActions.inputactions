@@ -1,0 +1,99 @@
+{
+    "name": "MenuInputActions",
+    "maps": [
+        {
+            "name": "MainMenu",
+            "id": "c54eaa0a-af67-4136-86a1-3112d67dbbb8",
+            "actions": [
+                {
+                    "name": "OnePlayerGame",
+                    "type": "Button",
+                    "id": "279e8e9b-e9c1-484a-9f6b-fe3e4bf37de2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TwoPlayerGame",
+                    "type": "Button",
+                    "id": "77b73ef4-f448-44f1-a154-abe494b6fbf1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7916908f-856b-43b1-9a62-d749f36ce24b",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "GamePad;Keyboard",
+                    "action": "OnePlayerGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "adc94128-4f29-45ae-b34c-a181fa69d2a1",
+                    "path": "<Keyboard>/numpad1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard;GamePad",
+                    "action": "OnePlayerGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64907e25-116a-499f-b6d8-5d6350350d3f",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard;GamePad",
+                    "action": "TwoPlayerGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f584ab1e-0eae-4166-96fd-7bd0f317e490",
+                    "path": "<Keyboard>/numpad2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard;GamePad",
+                    "action": "TwoPlayerGame",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard",
+            "bindingGroup": "Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "GamePad",
+            "bindingGroup": "GamePad",
+            "devices": [
+                {
+                    "devicePath": "<Gamepad>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
