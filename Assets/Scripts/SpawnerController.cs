@@ -36,6 +36,18 @@ public class SpawnerController : MonoBehaviour
     // The alien position grid.
     private Vector3[,] grid;
 
+    private List<GameObject> aliens;
+
+    public List<GameObject> Aliens {
+        get {
+            return aliens;
+        }
+
+        set {
+            aliens = value;
+        }
+    }
+
     private void Awake()
     {
 
@@ -45,6 +57,7 @@ public class SpawnerController : MonoBehaviour
     void Start()
     {
         grid = new Vector3[gridX, gridZ];
+        aliens = new List<GameObject>();
     }
 
     private void Update()
@@ -79,7 +92,7 @@ public class SpawnerController : MonoBehaviour
         StartCoroutine(loadAliens());
     }
 
-    IEnumerator loadAliens()
+    private IEnumerator loadAliens()
     {
         // Start in the first phase of loading.
         LoadEnemyState enemyState = LoadEnemyState.Phase1;
@@ -118,6 +131,9 @@ public class SpawnerController : MonoBehaviour
                             alien.transform.position = loadSpawners[1].position;
                             alienController.LaunchPad = 1;
                         }
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0));
@@ -159,6 +175,9 @@ public class SpawnerController : MonoBehaviour
                             alien.transform.position = loadSpawners[1].position;
                             alienController.LaunchPad = 1;
                         }
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0));
@@ -196,6 +215,9 @@ public class SpawnerController : MonoBehaviour
                         }
 
                         k++;
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0));
@@ -234,6 +256,8 @@ public class SpawnerController : MonoBehaviour
                         }
 
                         l++;
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0));
@@ -272,19 +296,22 @@ public class SpawnerController : MonoBehaviour
                         }
 
                         m++;
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0));
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1));
 
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(10f);
 
                     enemyState = LoadEnemyState.Done;
                     break;
             }
         }
 
-        GameManager.Instance.UpdateGameState(GameState.EnemiesFall);
+        GameManager.Instance.UpdateGameState(GameState.EnemiesAttack);
     }
 
     /// <summary>

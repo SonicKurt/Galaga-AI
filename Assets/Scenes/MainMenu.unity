@@ -1236,6 +1236,8 @@ MonoBehaviour:
   state: 0
   player: {fileID: 667947149966989465, guid: 90911abbad7b1482ba5b8674457a72b9, type: 3}
   initialLives: 3
+  currentPlayer: 0
+  aliensAttacking: 2
 --- !u!4 &973028771
 Transform:
   m_ObjectHideFlags: 0
