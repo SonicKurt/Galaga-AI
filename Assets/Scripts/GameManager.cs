@@ -17,11 +17,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using Random = System.Random;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    // The current state of the game.
     public GameState state;
 
     // Player instance.
@@ -30,11 +32,14 @@ public class GameManager : MonoBehaviour
     // Initial lives for the player to beign with.
     public int initialLives;
 
+    // The amount of players that are in the current session.
     private int playerCount;
 
+    // The current player playing.
     [SerializeField]
     private int currentPlayer;
 
+    // The current stage that each player is on.
     private int[] currentStage;
 
     private int[] scores;
@@ -48,6 +53,9 @@ public class GameManager : MonoBehaviour
 
     // The amount of aliens to attack one time.
     public int aliensAttacking;
+
+    // Check to see if the current player is dead.
+    public bool PlayerDead { get; set; }
 
     public int PlayerCount {
         get {
@@ -104,7 +112,8 @@ public class GameManager : MonoBehaviour
                 enemyNumberRanges[5, 0] = 16;
                 enemyNumberRanges[5, 1] = 23;
 
-                currentPlayer = 1; 
+                currentPlayer = 1;
+                PlayerDead = false;
                 break;
             case GameState.DisplayStageText:
                 // If scores and lives does not exist for the players,
@@ -115,11 +124,13 @@ public class GameManager : MonoBehaviour
 
                 if (lives == null) {
                     InitLives();
-                    MenuManager.Instance.UpdateLiveCounterText(lives[currentPlayer - 1]);
+
+                    // Initialize the stage counters.
+                    InitStageCounters();
                 }
 
-                // Initialize the stage counters.
-                InitStageCounters();
+                // Update the lives text field.
+                UpdateLivesTextField();
 
                 // Update the stage counter text field.
                 MenuManager.Instance.UpdateStageCounterText(currentStage[currentPlayer - 1]);
@@ -140,20 +151,38 @@ public class GameManager : MonoBehaviour
                 // TODO: Implement the logic to let the aliens start falling.
 
                 StartCoroutine(AlienAttack());
-
+               
 
                 break;
             case GameState.SwitchPlayer:
                 // TODO: Implement the ability to switch players if player
                 // count is two.
+                if (currentPlayer == 1) {
+                    currentPlayer++;
+                } else {
+                    currentPlayer--;
+                }
+
+                ClearAliens();
+
+                if (lives[currentPlayer - 1] > 0) {
+                    UpdateGameState(GameState.DisplayStageText);
+                } else {
+                    UpdateGameState(GameState.GameOver);
+                }
 
                 break;
             case GameState.GameOver:
                 // TODO: Set the Game Over panel active within the Canvas.
 
-
-
                 //PlayerPrefs.SetInt("High Score");
+
+                Destroy(MenuManager.Instance.canvas.gameObject);
+                Destroy(MenuManager.Instance.gameObject);
+                Destroy(this.gameObject);
+
+                SceneManager.LoadScene(0);
+                
                 break;
             default:
                 break;
@@ -214,9 +243,8 @@ public class GameManager : MonoBehaviour
         if (currentStage[currentPlayer - 1] == 1) {
             MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
             MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
+            yield return new WaitForSeconds(3f);
         }
-
-        yield return new WaitForSeconds(3f);
 
         MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
 
@@ -303,6 +331,39 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            // TODO: Modify this condition once the ability to shoot down
+            // enemies is a thing. Make sure that all the aliens are dead
+            // and set the attack state to be done.
+            if (PlayerDead) {
+                lives[currentPlayer - 1]--;
+
+                PlayerDead = false;
+
+                // If there are two players playing, we want to switch
+                // to the current player.
+                if (lives.Length == 2) {
+                    UpdateGameState(GameState.SwitchPlayer);
+                    yield break;
+                }
+
+                // If the current single player has lives, we
+                // must clear the alien grid, update the live counter text
+                // field, and update the game state to display the stage.
+                if (lives[currentPlayer - 1] > 0) {
+                    ClearAliens();
+                    UpdateLivesTextField();
+                    UpdateGameState(GameState.DisplayStageText);
+                    yield break;
+                }
+
+                UpdateGameState(GameState.GameOver);
+                yield break;
+            } else if (enemyAttackState == EnemyAttackState.Phase1) {
+                enemyAttackState = EnemyAttackState.Phase2;
+            } else {
+                enemyAttackState = EnemyAttackState.Phase1;
+            }
+
             // Timeout before letting another alien attack.
             yield return new WaitForSeconds(11f);
 
@@ -313,17 +374,23 @@ public class GameManager : MonoBehaviour
                 alienController.ResetToPosition = true;
                 currAliensAttacking.RemoveAt(numOfAliensAttacking);
             }
-
-            // TODO: Modify this condition once the ability to shoot down
-            // enemies is a thing. Make sure that all the aliens are dead
-            // and set the attack state to be done.
-            if (enemyAttackState == EnemyAttackState.Phase1) {
-                enemyAttackState = EnemyAttackState.Phase2;
-            } else {
-                enemyAttackState = EnemyAttackState.Phase1;
-            }
         }
     }
+
+    /// <summary>
+    /// Clears the entire alien grid from the grid object.
+    /// </summary>
+    private void ClearAliens() {
+        spawnerController.ClearGrid();
+    }
+
+    /// <summary>
+    /// Update the live counter text field for the current player.
+    /// </summary>
+    private void UpdateLivesTextField() {
+        MenuManager.Instance.UpdateLiveCounterText(lives[currentPlayer - 1]);
+    }
+
 }
 
 /// <summary>
@@ -362,6 +429,9 @@ public enum LoadEnemyState
     Done
 }
 
+/// <summary>
+/// Attack phases to which aliens can attack for the current timeframe.
+/// </summary>
 public enum EnemyAttackState {
     Phase1,
     Phase2,

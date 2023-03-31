@@ -30,6 +30,8 @@ public class AlienController : MonoBehaviour
     // The movement of the alien.
     private float speed;
 
+    private float bulletSpeed;
+
     // The current lanch pad to launch this alien.
     private int launchPad;
 
@@ -41,6 +43,18 @@ public class AlienController : MonoBehaviour
 
     // The grid spawner controller.
     private SpawnerController spawnerController;
+
+    // Bullet prefab for the alien.
+    public GameObject bulletPrefab;
+
+    // Randomizer instance.
+    private Random randomizer;
+
+    // The times the alien shot bullets.
+    private int timesShot;
+
+    // The collection of bullets that the alien instantiated.
+    private List<GameObject> bullets;
 
     public EnemyType Type
     {
@@ -91,6 +105,16 @@ public class AlienController : MonoBehaviour
         }
     }
 
+    public float BulletSpeed {
+        get {
+            return bulletSpeed;
+        }
+
+        set {
+            bulletSpeed = value;
+        }
+    }
+
     public int LaunchPad
     {
         get
@@ -130,6 +154,8 @@ public class AlienController : MonoBehaviour
         resetToPosition = false;
         GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
         spawnerController = spawner.GetComponent<SpawnerController>();
+        randomizer = new Random();
+        timesShot = 0;
     }
 
     // Update is called once per frame
@@ -157,8 +183,24 @@ public class AlienController : MonoBehaviour
                     launchPad.position.z);
 
                 attack = !resetToPosition;
+
+                ClearBullets();
+                timesShot = 0;
             } else {
+                //transform.position -= Vector3.up * speed * Time.deltaTime;
                 transform.position -= Vector3.forward * speed * Time.deltaTime;
+
+                int timeToShoot = randomizer.Next(0, 2);
+                if (timeToShoot == 1 && timesShot == 0) {
+                    StartCoroutine(Shoot());
+                    timesShot++;
+                }
+
+                if (timesShot == 1 && bullets.Count != 0) {
+                    for (int i = 0; i < bullets.Count; i++) {
+                        bullets[i].transform.position -= Vector3.forward * bulletSpeed * Time.deltaTime;
+                    }
+                }
             }
         }
 
@@ -171,6 +213,35 @@ public class AlienController : MonoBehaviour
                 readyToLaunch = false;
                 resetToPosition = false;
             }
+        }
+    }
+
+    /// <summary>
+    /// Instantiate new bullet objects for the alien.
+    /// </summary>
+    /// <returns>A time to timeout to instantiate the next bullet</returns>
+    private IEnumerator Shoot() {
+        int amountOfBullets = randomizer.Next(1, 4);
+
+        bullets = new List<GameObject>();
+
+        for (int i = 0; i < amountOfBullets; i++) {
+            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            bullets.Add(bullet);
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    /// <summary>
+    /// Clears the bullets from the scene if the player had died.
+    /// </summary>
+    public void ClearBullets() {
+        if (bullets != null) {
+            foreach (GameObject bullet in bullets) {
+                Destroy(bullet);
+            }
+
+            bullets.Clear();
         }
     }
 }

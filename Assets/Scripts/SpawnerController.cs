@@ -5,7 +5,7 @@
  * into their proper positions.
  * 
  * Author: Kurt Campbell
- * Date: 19 March 2023
+ * Created: 19 March 2023
  * 
  * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
  * Donald Osborn.
@@ -26,10 +26,13 @@ public class SpawnerController : MonoBehaviour
     // The grid cells' padding offset.
     public float gapSize;
     public float alienSpeed;
+    public float alienBulletSpeed;
 
     public GameObject stringerObject;
     public GameObject goeiObject;
     public GameObject bossGalagaObject;
+
+    private Transform gridTransform;
 
     public Transform[] loadSpawners;
 
@@ -38,6 +41,9 @@ public class SpawnerController : MonoBehaviour
 
     private List<GameObject> aliens;
 
+    private bool gridLeft;
+    private bool aliensLoaded;
+    
     public List<GameObject> Aliens {
         get {
             return aliens;
@@ -58,11 +64,31 @@ public class SpawnerController : MonoBehaviour
     {
         grid = new Vector3[gridX, gridZ];
         aliens = new List<GameObject>();
+        gridTransform = transform;
+        gridLeft = true;
+        aliensLoaded = false;
     }
 
     private void Update()
     {
-       
+        // Move the grid once the aliens has been loaded in.
+        /*
+        if (aliensLoaded) {
+            if (gridLeft) {
+                gridTransform.position += Vector3.left * 2f * Time.deltaTime;
+            } else {
+                gridTransform.position += Vector3.right * 2f * Time.deltaTime;
+            }
+
+            if (gridTransform.position.x <= -4f) {
+                gridLeft = false;
+            }
+
+            if (gridTransform.position.x >= 4f) {
+                gridLeft = true;
+            }
+        }
+        */
     }
 
     public void SpawnAliens()
@@ -348,6 +374,7 @@ public class SpawnerController : MonoBehaviour
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.Goei;
         alienController.Speed = alienSpeed;
+        alienController.BulletSpeed = alienBulletSpeed;
         return goei;
     }
 
@@ -364,6 +391,7 @@ public class SpawnerController : MonoBehaviour
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.Stringer;
         alienController.Speed = alienSpeed;
+        alienController.BulletSpeed = alienBulletSpeed;
         return stringer;
     }
 
@@ -380,6 +408,20 @@ public class SpawnerController : MonoBehaviour
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.BossGalaga;
         alienController.Speed = alienSpeed;
+        alienController.BulletSpeed = alienBulletSpeed;
         return bossGalaga;
+    }
+
+    /// <summary>
+    /// Clears the entire alien grid.
+    /// </summary>
+    public void ClearGrid() {
+        foreach (GameObject alien in aliens) {
+            AlienController alienController = alien.GetComponent<AlienController>();
+            alienController.ClearBullets();
+            Destroy(alien);
+        }
+
+        aliens.Clear();
     }
 }

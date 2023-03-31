@@ -30,4 +30,21 @@ public class PlayerController : MonoBehaviour {
     void Update(){
         transform.Translate(new Vector3(movementValue, 0, 0) * movementSpeed * Time.deltaTime);
     }
+
+    /// <summary>
+    /// When the player collides with an alien bullet or one of the aliens,
+    /// the player must die.
+    /// </summary>
+    /// <param name="other">The object that corresponds to either an
+    /// alien or one of its bullets.</param>
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "AlienBullet"
+            || other.tag == "Goei"
+            || other.tag == "Stringer"
+            || other.tag == "BossGalaga") {
+            GameManager.Instance.PlayerDead = true;
+            Destroy(this.gameObject);
+        }
+    }
 }

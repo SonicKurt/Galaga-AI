@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7066546235161977277}
   m_Layer: 0
   m_Name: Butterfly
-  m_TagString: Butterfly
+  m_TagString: Goei
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,3 +110,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddca33b8a6b7ba145a60e5cb6a9d9ac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 7531242057417417011, guid: 37686e1231ae842399b5ecba06f2ce4e, type: 3}
