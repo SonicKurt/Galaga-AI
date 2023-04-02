@@ -244,4 +244,22 @@ public class AlienController : MonoBehaviour
             bullets.Clear();
         }
     }
+
+    public void DestoryAlien() {
+        if (attack) {
+            GameManager.Instance.RemoveAlienAttacking(this.gameObject);
+        }
+
+        GameManager.Instance.RemoveAlien(this.gameObject);
+        //spawnerController.RemoveAlien(this.gameObject);
+        Destroy(this.gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "PlayerBullet") {
+            GameManager.Instance.UpdateScore(type, attack);
+            DestoryAlien();
+        }
+    }
 }

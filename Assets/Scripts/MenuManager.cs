@@ -18,8 +18,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class MenuManager : MonoBehaviour
-{
+public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
 
     // Main User Interface.
@@ -57,7 +56,7 @@ public class MenuManager : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        
+
     }
 
     /// <summary>
@@ -135,6 +134,10 @@ public class MenuManager : MonoBehaviour
     /// <param name="stage"></param>
     public void UpdateCurrentStageTextField(int stage) {
         currentStageText.SetText("Stage " + stage);
+    }
+
+    public void UpdateCurrentStageTextField() {
+        currentStageText.SetText("Ready");
     }
 
 

@@ -46,5 +46,12 @@ public class PlayerController : MonoBehaviour {
             GameManager.Instance.PlayerDead = true;
             Destroy(this.gameObject);
         }
+
+        if (other.tag == "Goei"
+            || other.tag == "Stringer"
+            || other.tag == "BossGalaga") {
+            AlienController alienController = other.gameObject.GetComponent<AlienController>();
+            alienController.DestoryAlien();
+        }
     }
 }

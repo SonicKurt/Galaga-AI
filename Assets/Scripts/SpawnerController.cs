@@ -330,6 +330,8 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0));
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1));
 
+                    GameManager.Instance.InitPlayerAlienGrid();
+
                     yield return new WaitForSeconds(10f);
 
                     enemyState = LoadEnemyState.Done;
@@ -411,6 +413,12 @@ public class SpawnerController : MonoBehaviour
         alienController.BulletSpeed = alienBulletSpeed;
         return bossGalaga;
     }
+
+    /*
+    public void RemoveAlien(GameObject alien) {
+        aliens.Remove(alien);
+    }
+    */
 
     /// <summary>
     /// Clears the entire alien grid.
