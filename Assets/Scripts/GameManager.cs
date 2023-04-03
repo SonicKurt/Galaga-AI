@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
     private List<GameObject> currAliensAttacking;
 
-    private List<GameObject>[] playerAlienGrids; 
+    private List<List<GameObject>> playerAlienGrids; 
 
     // Check to see if the current player is dead.
     public bool PlayerDead { get; set; }
@@ -119,9 +119,9 @@ public class GameManager : MonoBehaviour
 
                 currentPlayer = 1;
                 PlayerDead = false;
+                playerAlienGrids = new List<List<GameObject>>();
                 break;
             case GameState.DisplayStageText:
-                playerAlienGrids = new List<GameObject>[playerCount];
                 // If scores and lives does not exist for the players,
                 // initialize them with values to begin their session.
                 if (scores == null) {
@@ -151,29 +151,28 @@ public class GameManager : MonoBehaviour
                 spawnerController = spawner.GetComponent<SpawnerController>();
 
                 // Loads the aliens into their proper positions.    
-                if (playerAlienGrids[currentPlayer - 1] == null) {
+                if (playerAlienGrids.Count < playerCount) {
                     spawnerController.SpawnAliens();
                 } else if (playerAlienGrids[currentPlayer - 1].Count != 0) {
+                    ShowAliens();
                     UpdateGameState(GameState.EnemiesAttack);
                 }
                 break;
             case GameState.EnemiesAttack:
+                //StopAllCoroutines();
                 currAliensAttacking = new List<GameObject>();
                 StartCoroutine(AlienAttack());
-               
 
+            
                 break;
             case GameState.SwitchPlayer:
+                ClearAliens();
+
                 if (currentPlayer == 1) {
                     currentPlayer++;
                 } else {
                     currentPlayer--;
                 }
-
-
-                // TODO: Save the state of aliens from the current player.
-                // Do not clear them.
-                //ClearAliens();
 
                 if (lives[currentPlayer - 1] > 0) {
                     UpdateGameState(GameState.DisplayStageText);
@@ -253,7 +252,7 @@ public class GameManager : MonoBehaviour
     /// Initialize a new alien grid for the current player.
     /// </summary>
     public void InitPlayerAlienGrid() {
-        playerAlienGrids[currentPlayer - 1] = spawnerController.Aliens;
+        playerAlienGrids.Add(spawnerController.Aliens);
     }
 
     /// <summary>
@@ -385,7 +384,7 @@ public class GameManager : MonoBehaviour
 
                 // Let a Goei, Stringer, or Boss Galaga attack.
                 if (enemyAttackState == EnemyAttackState.Phase2 && i == 0) {
-                    EnemyType alienType = (EnemyType)randomizer.Next(0, 3);
+                    EnemyType alienType = (EnemyType) randomizer.Next(0, 3);
                     int range = 0;
 
                     if (alienType == EnemyType.Goei) {
@@ -414,10 +413,9 @@ public class GameManager : MonoBehaviour
                 lives[currentPlayer - 1]--;
 
                 PlayerDead = false;
-
                 // If there are two players playing, we want to switch
                 // to the current player.
-                if (lives.Length == 2) {
+                if (playerCount == 2) {
                     // TODO: Clear the grid for the current player.
                     UpdateGameState(GameState.SwitchPlayer);
                     yield break;
@@ -433,10 +431,10 @@ public class GameManager : MonoBehaviour
                     
                     UpdateLivesTextField();
                     UpdateGameState(GameState.DisplayStageText);
-                    yield break;
                 }
 
                 UpdateGameState(GameState.GameOver);
+                
                 yield break;
             } else if (enemyAttackState == EnemyAttackState.Phase1) {
                 enemyAttackState = EnemyAttackState.Phase2;
@@ -455,7 +453,16 @@ public class GameManager : MonoBehaviour
     /// Clears the entire alien grid from the grid object.
     /// </summary>
     private void ClearAliens() {
-        spawnerController.ClearGrid();
+        foreach (GameObject alien in playerAlienGrids[currentPlayer - 1]) {
+            alien.SetActive(false);
+        }
+        //spawnerController.ClearGrid();
+    }
+
+    private void ShowAliens() {
+        foreach (GameObject alien in playerAlienGrids[currentPlayer - 1]) {
+            alien.SetActive(true);
+        }
     }
 
     private void ResetAliens(List<GameObject> currAliensAttacking) {
