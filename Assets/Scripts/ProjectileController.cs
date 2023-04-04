@@ -19,7 +19,7 @@ public class ProjectileController : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other.compareTag(targetTag)) {
+        if (other.CompareTag(targetTag)) {
             Destroy(other.gameObject);
         }
     }
