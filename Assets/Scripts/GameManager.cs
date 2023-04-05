@@ -246,7 +246,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="alien"></param>
     public void RemoveAlien(GameObject alien) {
-        playerAlienGrids[currentPlayer - 1].Remove(alien);
+        //playerAlienGrids[currentPlayer - 1].Remove(alien);
+        spawnerController.Aliens.Remove(alien);
     }
 
     /// <summary>
@@ -345,7 +346,8 @@ public class GameManager : MonoBehaviour
     /// attack.
     /// </returns>
     private IEnumerator AlienAttack() {
-        List<GameObject> aliens = playerAlienGrids[currentPlayer - 1];
+        List<GameObject> aliens = spawnerController.Aliens;
+        //List<GameObject> aliens = playerAlienGrids[currentPlayer - 1];
 
         // If all of the aliens have been destroyed, we will increase
         // the stage counter and proceed to the next stage.
@@ -454,10 +456,12 @@ public class GameManager : MonoBehaviour
     /// Clears the entire alien grid from the grid object.
     /// </summary>
     private void ClearAliens() {
+        /*
         foreach (GameObject alien in playerAlienGrids[currentPlayer - 1]) {
             alien.SetActive(false);
         }
-        //spawnerController.ClearGrid();
+        */
+        spawnerController.ClearGrid();
     }
 
     private void ShowAliens() {
@@ -528,4 +532,9 @@ public enum EnemyAttackState {
     Phase1,
     Phase2,
     Done
+}
+
+public enum BulletType {
+    Player,
+    Alien
 }

@@ -330,7 +330,7 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0));
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1));
 
-                    GameManager.Instance.InitPlayerAlienGrid();
+                    //GameManager.Instance.InitPlayerAlienGrid();
 
                     yield return new WaitForSeconds(10f);
 
