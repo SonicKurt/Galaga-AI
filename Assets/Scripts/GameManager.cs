@@ -161,6 +161,7 @@ public class GameManager : MonoBehaviour
             case GameState.EnemiesAttack:
                 //StopAllCoroutines();
                 currAliensAttacking = new List<GameObject>();
+                Debug.Log(currentPlayer + "'s Aliens Attack!");
                 StartCoroutine(AlienAttack());
 
             
