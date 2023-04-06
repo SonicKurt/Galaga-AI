@@ -10,9 +10,23 @@ public class PlayerController : MonoBehaviour {
     public float movementSpeed;
     public float maxProjectiles;
     public GameObject projectileToSpawn;
+    public float shootDelay;
+
+    private AudioSource shootSoundEffect;
+
+    private float startTime;
+    private bool reload;
+
 
     void OnFire() {
-        GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0,0,1), Quaternion.Euler(0,0,0));
+        if (!reload) {
+            shootSoundEffect.Play();
+            GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
+            BulletController bulletController = projectile.GetComponent<BulletController>();
+            bulletController.Type = BulletType.Player;
+            reload = true;
+            startTime = Time.time + shootDelay;
+        }
     }
 
     void OnMovement(InputValue value) {
@@ -30,12 +44,19 @@ public class PlayerController : MonoBehaviour {
     // Start is called before the first frame update
     void Start()
     {
-        
+        shootSoundEffect = GetComponent<AudioSource>();
+        startTime = Time.time + shootDelay;
+        reload = true;
     }
 
     // Update is called once per frame
     void Update(){
-        transform.Translate(new Vector3(movementValue, 0, 0) * movementSpeed * Time.deltaTime);
+        //transform.Translate(new Vector3(movementValue, 0, 0) * movementSpeed * Time.deltaTime)
+        transform.position += new Vector3(movementValue * movementSpeed * Time.deltaTime, 0, 0);
+        if (Time.time > startTime) {
+            reload = false;
+        }
+
     }
 
     /// <summary>
@@ -47,9 +68,12 @@ public class PlayerController : MonoBehaviour {
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Bullet") {
-            Destroy(other.gameObject);
-            GameManager.Instance.PlayerDead = true;
-            Destroy(this.gameObject);
+            BulletController bulletController = other.GetComponent<BulletController>();
+            if (bulletController.Type == BulletType.Alien) {
+                Destroy(other.gameObject);
+                GameManager.Instance.PlayerDead = true;
+                Destroy(this.gameObject);
+            }   
         }
 
         if (other.tag == "Goei"

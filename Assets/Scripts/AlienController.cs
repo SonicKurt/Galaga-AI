@@ -56,6 +56,7 @@ public class AlienController : MonoBehaviour
     // The collection of bullets that the alien instantiated.
     private List<GameObject> bullets;
 
+    private AudioSource dieSoundEffect;
     public EnemyType Type
     {
         get
@@ -156,6 +157,7 @@ public class AlienController : MonoBehaviour
         spawnerController = spawner.GetComponent<SpawnerController>();
         randomizer = new Random();
         timesShot = 0;
+        dieSoundEffect = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -246,6 +248,8 @@ public class AlienController : MonoBehaviour
 
         GameManager.Instance.RemoveAlien(this.gameObject);
         //spawnerController.RemoveAlien(this.gameObject);
+
+        dieSoundEffect.Play();
         Destroy(this.gameObject);
     }
 

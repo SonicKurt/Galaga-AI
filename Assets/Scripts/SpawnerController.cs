@@ -371,7 +371,7 @@ public class SpawnerController : MonoBehaviour
     /// <returns>The newly created Goei alien.</returns>
     GameObject SpawnGoei(Vector3 spawnPos)
     {
-        GameObject goei = Instantiate(goeiObject, spawnPos, Quaternion.identity);
+        GameObject goei = Instantiate(goeiObject, spawnPos, Quaternion.Euler(-90, 90, 0));
         goei.transform.SetParent(transform);
         AlienController alienController = goei.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;
@@ -388,7 +388,7 @@ public class SpawnerController : MonoBehaviour
     /// <returns>The newly created Stringer alien,</returns>
     GameObject SpawnStringer(Vector3 spawnPos)
     {
-        GameObject stringer = Instantiate(stringerObject, spawnPos, Quaternion.identity);
+        GameObject stringer = Instantiate(stringerObject, spawnPos, Quaternion.Euler(-90, 90, 0));
         stringer.transform.SetParent(transform);
         AlienController alienController = stringer.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;
@@ -405,7 +405,7 @@ public class SpawnerController : MonoBehaviour
     /// <returns>The newly created Boss Galaga alien.</returns>
     GameObject SpawnBossGalaga(Vector3 spawnPos)
     {
-        GameObject bossGalaga = Instantiate(bossGalagaObject, spawnPos, Quaternion.identity);
+        GameObject bossGalaga = Instantiate(bossGalagaObject, spawnPos, Quaternion.Euler(-90, 90, 0));
         bossGalaga.transform.SetParent(transform);
         AlienController alienController = bossGalaga.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;

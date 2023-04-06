@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 819127808985809}
   - component: {fileID: 8639733373707852464}
   m_Layer: 0
-  m_Name: Stinger
+  m_Name: StingerCube
   m_TagString: Stringer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

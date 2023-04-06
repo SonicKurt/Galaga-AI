@@ -159,7 +159,7 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case GameState.EnemiesAttack:
-                //StopAllCoroutines();
+                
                 int alienCount = spawnerController.Aliens.Count;
 
                 if (alienCount == 0) {
@@ -336,6 +336,11 @@ public class GameManager : MonoBehaviour
         if (PlayerDead) {
             PlayerDead = false;
             // Displays the ready state text.
+            if (lives.Length == 2) {
+                MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
+                MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
+            }
+            
             MenuManager.Instance.UpdateCurrentStageTextField();
             if (!playerSpawned) {
                 SpawnPlayer();
@@ -356,7 +361,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void SpawnPlayer() {
         Vector3 spawnPos = new Vector3(-1.1f, 0f, -4f);
-        Instantiate(player, spawnPos, Quaternion.identity);
+        Instantiate(player, spawnPos, Quaternion.Euler(-90, 90, 0));
     }
 
     /// <summary>
