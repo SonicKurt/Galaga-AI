@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,6 +23,10 @@ public class PlayerController : MonoBehaviour {
         Debug.Log("Game paused!");
     }
 
+    void OnExit() {
+        Application.Quit();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,10 +46,8 @@ public class PlayerController : MonoBehaviour {
     /// alien or one of its bullets.</param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "AlienBullet"
-            || other.tag == "Goei"
-            || other.tag == "Stringer"
-            || other.tag == "BossGalaga") {
+        if (other.tag == "Bullet") {
+            Destroy(other.gameObject);
             GameManager.Instance.PlayerDead = true;
             Destroy(this.gameObject);
         }
@@ -54,6 +57,8 @@ public class PlayerController : MonoBehaviour {
             || other.tag == "BossGalaga") {
             AlienController alienController = other.gameObject.GetComponent<AlienController>();
             alienController.DestoryAlien();
+            GameManager.Instance.PlayerDead = true;
+            Destroy(this.gameObject);
         }
     }
 }

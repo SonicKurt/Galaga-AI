@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 667947149966989466}
   - component: {fileID: 667947149966989467}
   - component: {fileID: 667947149966989462}
+  - component: {fileID: 9102232837513547573}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -94,10 +95,10 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 667947149966989465}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.2, y: 1.2, z: 1.2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &667947149966989467
 MonoBehaviour:
@@ -143,4 +144,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementValue: 0
   movementSpeed: 5
-  projectileToSpawn: {fileID: 4900470468917761797, guid: d8437ad9611f5d24f8f823006c077f9a, type: 3}
+  maxProjectiles: 0
+  projectileToSpawn: {fileID: 7531242057417417011, guid: 37686e1231ae842399b5ecba06f2ce4e, type: 3}
+--- !u!54 &9102232837513547573
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 667947149966989465}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

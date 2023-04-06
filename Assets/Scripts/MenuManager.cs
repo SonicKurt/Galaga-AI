@@ -62,15 +62,19 @@ public class MenuManager : MonoBehaviour {
     /// <summary>
     /// Player input action to start a one player game.
     /// </summary>
-    void OnOnePlayerGame() {
+    public void OnOnePlayerGame() {
         StartOnePlayerGame();
     }
 
     /// <summary>
     /// Player input action to start a two player game.
     /// </summary>
-    void OnTwoPlayerGame() {
+    public void OnTwoPlayerGame() {
         StartTwoPlayerGame();
+    }
+
+    public void OnExit() {
+        Application.Quit();
     }
 
     /// <summary>

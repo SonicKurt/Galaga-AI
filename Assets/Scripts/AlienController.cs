@@ -195,12 +195,6 @@ public class AlienController : MonoBehaviour
                     StartCoroutine(Shoot());
                     timesShot++;
                 }
-
-                if (timesShot == 1 && bullets.Count != 0) {
-                    for (int i = 0; i < bullets.Count; i++) {
-                        bullets[i].transform.position -= Vector3.forward * bulletSpeed * Time.deltaTime;
-                    }
-                }
             }
         }
 
@@ -221,13 +215,13 @@ public class AlienController : MonoBehaviour
     /// </summary>
     /// <returns>A time to timeout to instantiate the next bullet</returns>
     private IEnumerator Shoot() {
+        yield return new WaitForSeconds(0.7f);
         int amountOfBullets = randomizer.Next(1, 4);
-
-        bullets = new List<GameObject>();
 
         for (int i = 0; i < amountOfBullets; i++) {
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            bullets.Add(bullet);
+            BulletController bulletController = bullet.GetComponent<BulletController>();
+            bulletController.Type = BulletType.Alien;
             yield return new WaitForSeconds(0.5f);
         }
     }
@@ -257,9 +251,15 @@ public class AlienController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "PlayerBullet") {
-            GameManager.Instance.UpdateScore(type, attack);
-            DestoryAlien();
+        if (other.tag == "Bullet") {
+            BulletController bullet = other.GetComponent<BulletController>();
+
+            if (bullet.Type != BulletType.Alien) {
+                GameManager.Instance.UpdateScore(type, attack);
+                DestoryAlien();
+                Destroy(other.gameObject);
+            }
+            
         }
     }
 }

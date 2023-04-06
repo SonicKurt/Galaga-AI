@@ -332,7 +332,7 @@ public class SpawnerController : MonoBehaviour
 
                     //GameManager.Instance.InitPlayerAlienGrid();
 
-                    yield return new WaitForSeconds(10f);
+                    yield return new WaitForSeconds(11f);
 
                     enemyState = LoadEnemyState.Done;
                     break;
@@ -353,13 +353,14 @@ public class SpawnerController : MonoBehaviour
     {
         foreach (GameObject alien in alienLoadDeck)
         {
-            AlienController alienController = alien.GetComponent<AlienController>();
+            if (alien != null) {
+                AlienController alienController = alien.GetComponent<AlienController>();
 
-            if (alienController.Type == enemyType && alienController.LaunchPad == launchPad)
-            {
-                alienController.ReadyToLaunch = true;
-                yield return new WaitForSeconds(1.5f);
-            }
+                if (alienController.Type == enemyType && alienController.LaunchPad == launchPad) {
+                    alienController.ReadyToLaunch = true;
+                    yield return new WaitForSeconds(1.5f);
+                }
+            }  
         }
     }
 

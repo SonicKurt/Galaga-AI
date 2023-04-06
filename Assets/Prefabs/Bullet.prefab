@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 7531242057417417010}
   - component: {fileID: 6728093540535595758}
   m_Layer: 0
-  m_Name: AlienBullet
-  m_TagString: AlienBullet
+  m_Name: Bullet
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,6 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14eeb664c847ca74a931ff38e54e557e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  topBounds: 9
+  speed: 9
+  topBounds: 30
   bottomBounds: -9
