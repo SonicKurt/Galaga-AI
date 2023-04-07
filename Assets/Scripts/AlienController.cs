@@ -247,8 +247,7 @@ public class AlienController : MonoBehaviour
         }
 
         GameManager.Instance.RemoveAlien(this.gameObject);
-        //spawnerController.RemoveAlien(this.gameObject);
-
+        
         dieSoundEffect.Play();
         Destroy(this.gameObject);
     }

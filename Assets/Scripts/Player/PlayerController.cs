@@ -51,8 +51,13 @@ public class PlayerController : MonoBehaviour {
 
     // Update is called once per frame
     void Update(){
-        //transform.Translate(new Vector3(movementValue, 0, 0) * movementSpeed * Time.deltaTime)
-        transform.position += new Vector3(movementValue * movementSpeed * Time.deltaTime, 0, 0);
+        float horizontalMovement = movementValue * movementSpeed * Time.deltaTime;
+        Vector3 pos = transform.position;
+
+        // Clamps the horizontal movement to the left and right boundaries from the origin.
+        pos.x = Mathf.Clamp(pos.x + horizontalMovement, -12, 12);
+        transform.position = pos;
+
         if (Time.time > startTime) {
             reload = false;
         }

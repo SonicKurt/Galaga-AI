@@ -40,9 +40,6 @@ public class SpawnerController : MonoBehaviour
     private Vector3[,] grid;
 
     private List<GameObject> aliens;
-
-    private bool gridLeft;
-    private bool aliensLoaded;
     
     public List<GameObject> Aliens {
         get {
@@ -65,30 +62,11 @@ public class SpawnerController : MonoBehaviour
         grid = new Vector3[gridX, gridZ];
         aliens = new List<GameObject>();
         gridTransform = transform;
-        gridLeft = true;
-        aliensLoaded = false;
     }
 
     private void Update()
     {
-        // Move the grid once the aliens has been loaded in.
-        /*
-        if (aliensLoaded) {
-            if (gridLeft) {
-                gridTransform.position += Vector3.left * 2f * Time.deltaTime;
-            } else {
-                gridTransform.position += Vector3.right * 2f * Time.deltaTime;
-            }
 
-            if (gridTransform.position.x <= -4f) {
-                gridLeft = false;
-            }
-
-            if (gridTransform.position.x >= 4f) {
-                gridLeft = true;
-            }
-        }
-        */
     }
 
     public void SpawnAliens()
@@ -165,7 +143,7 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0));
                     StartCoroutine(launchAliens(aliensToLoad, EnemyType.Stringer, 1));
 
-                    yield return new WaitForSeconds(9f);
+                    yield return new WaitForSeconds(8.5f);
                     enemyState = LoadEnemyState.Phase2;
                     break;
 
@@ -209,7 +187,7 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0));
                     StartCoroutine(launchAliens(aliensToLoad2, EnemyType.BossGalaga, 1));
 
-                    yield return new WaitForSeconds(9f);
+                    yield return new WaitForSeconds(8.5f);
                     enemyState = LoadEnemyState.Phase3;
                     break;
 
@@ -249,7 +227,7 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0));
                     StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 1));
 
-                    yield return new WaitForSeconds(10f);
+                    yield return new WaitForSeconds(9.5f);
 
                     enemyState = LoadEnemyState.Phase4;
                     break;
@@ -289,7 +267,7 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0));
                     StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 1));
 
-                    yield return new WaitForSeconds(10f);
+                    yield return new WaitForSeconds(9.5f);
 
                     enemyState = LoadEnemyState.Phase5;
                     break;
@@ -332,7 +310,7 @@ public class SpawnerController : MonoBehaviour
 
                     //GameManager.Instance.InitPlayerAlienGrid();
 
-                    yield return new WaitForSeconds(11f);
+                    yield return new WaitForSeconds(10.5f);
 
                     enemyState = LoadEnemyState.Done;
                     break;
