@@ -4,7 +4,7 @@
  * Summary: Manages the game's flow.
  * 
  * Author: Kurt Campbell
- * Date: 23 March 2023
+ * Created: 23 March 2023
  * 
  * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
  * Donald Osborn.
@@ -18,8 +18,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class MenuManager : MonoBehaviour
-{
+public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
 
     // Main User Interface.
@@ -57,21 +56,25 @@ public class MenuManager : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        
+
     }
 
     /// <summary>
     /// Player input action to start a one player game.
     /// </summary>
-    void OnOnePlayerGame() {
+    public void OnOnePlayerGame() {
         StartOnePlayerGame();
     }
 
     /// <summary>
     /// Player input action to start a two player game.
     /// </summary>
-    void OnTwoPlayerGame() {
+    public void OnTwoPlayerGame() {
         StartTwoPlayerGame();
+    }
+
+    public void OnExit() {
+        Application.Quit();
     }
 
     /// <summary>
@@ -135,6 +138,10 @@ public class MenuManager : MonoBehaviour
     /// <param name="stage"></param>
     public void UpdateCurrentStageTextField(int stage) {
         currentStageText.SetText("Stage " + stage);
+    }
+
+    public void UpdateCurrentStageTextField() {
+        currentStageText.SetText("Ready");
     }
 
 

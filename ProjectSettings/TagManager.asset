@@ -3,7 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - MainMenu
+  - Score
+  - StageCounter
+  - LivesCounter
+  - CurrentStage
+  - Spawner
+  - AlienBullet
+  - Stringer
+  - BossGalaga
+  - Goei
   layers:
   - Default
   - TransparentFX

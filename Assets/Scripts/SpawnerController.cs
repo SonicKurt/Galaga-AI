@@ -5,7 +5,7 @@
  * into their proper positions.
  * 
  * Author: Kurt Campbell
- * Date: 19 March 2023
+ * Created: 19 March 2023
  * 
  * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
  * Donald Osborn.
@@ -26,15 +26,30 @@ public class SpawnerController : MonoBehaviour
     // The grid cells' padding offset.
     public float gapSize;
     public float alienSpeed;
+    public float alienBulletSpeed;
 
     public GameObject stringerObject;
     public GameObject goeiObject;
     public GameObject bossGalagaObject;
 
+    private Transform gridTransform;
+
     public Transform[] loadSpawners;
 
     // The alien position grid.
     private Vector3[,] grid;
+
+    private List<GameObject> aliens;
+    
+    public List<GameObject> Aliens {
+        get {
+            return aliens;
+        }
+
+        set {
+            aliens = value;
+        }
+    }
 
     private void Awake()
     {
@@ -45,11 +60,13 @@ public class SpawnerController : MonoBehaviour
     void Start()
     {
         grid = new Vector3[gridX, gridZ];
+        aliens = new List<GameObject>();
+        gridTransform = transform;
     }
 
     private void Update()
     {
-       
+
     }
 
     public void SpawnAliens()
@@ -79,7 +96,7 @@ public class SpawnerController : MonoBehaviour
         StartCoroutine(loadAliens());
     }
 
-    IEnumerator loadAliens()
+    private IEnumerator loadAliens()
     {
         // Start in the first phase of loading.
         LoadEnemyState enemyState = LoadEnemyState.Phase1;
@@ -118,12 +135,15 @@ public class SpawnerController : MonoBehaviour
                             alien.transform.position = loadSpawners[1].position;
                             alienController.LaunchPad = 1;
                         }
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0));
                     StartCoroutine(launchAliens(aliensToLoad, EnemyType.Stringer, 1));
 
-                    yield return new WaitForSeconds(9f);
+                    yield return new WaitForSeconds(8.5f);
                     enemyState = LoadEnemyState.Phase2;
                     break;
 
@@ -159,12 +179,15 @@ public class SpawnerController : MonoBehaviour
                             alien.transform.position = loadSpawners[1].position;
                             alienController.LaunchPad = 1;
                         }
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0));
                     StartCoroutine(launchAliens(aliensToLoad2, EnemyType.BossGalaga, 1));
 
-                    yield return new WaitForSeconds(9f);
+                    yield return new WaitForSeconds(8.5f);
                     enemyState = LoadEnemyState.Phase3;
                     break;
 
@@ -196,12 +219,15 @@ public class SpawnerController : MonoBehaviour
                         }
 
                         k++;
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0));
                     StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 1));
 
-                    yield return new WaitForSeconds(10f);
+                    yield return new WaitForSeconds(9.5f);
 
                     enemyState = LoadEnemyState.Phase4;
                     break;
@@ -234,12 +260,14 @@ public class SpawnerController : MonoBehaviour
                         }
 
                         l++;
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0));
                     StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 1));
 
-                    yield return new WaitForSeconds(10f);
+                    yield return new WaitForSeconds(9.5f);
 
                     enemyState = LoadEnemyState.Phase5;
                     break;
@@ -272,19 +300,24 @@ public class SpawnerController : MonoBehaviour
                         }
 
                         m++;
+
+                        // Store alien for the randomizer to pick an alien.
+                        aliens.Add(alien);
                     }
 
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0));
                     StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1));
 
-                    yield return new WaitForSeconds(1f);
+                    //GameManager.Instance.InitPlayerAlienGrid();
+
+                    yield return new WaitForSeconds(10.5f);
 
                     enemyState = LoadEnemyState.Done;
                     break;
             }
         }
 
-        GameManager.Instance.UpdateGameState(GameState.EnemiesFall);
+        GameManager.Instance.UpdateGameState(GameState.EnemiesAttack);
     }
 
     /// <summary>
@@ -298,13 +331,14 @@ public class SpawnerController : MonoBehaviour
     {
         foreach (GameObject alien in alienLoadDeck)
         {
-            AlienController alienController = alien.GetComponent<AlienController>();
+            if (alien != null) {
+                AlienController alienController = alien.GetComponent<AlienController>();
 
-            if (alienController.Type == enemyType && alienController.LaunchPad == launchPad)
-            {
-                alienController.ReadyToLaunch = true;
-                yield return new WaitForSeconds(1.5f);
-            }
+                if (alienController.Type == enemyType && alienController.LaunchPad == launchPad) {
+                    alienController.ReadyToLaunch = true;
+                    yield return new WaitForSeconds(1.5f);
+                }
+            }  
         }
     }
 
@@ -315,12 +349,13 @@ public class SpawnerController : MonoBehaviour
     /// <returns>The newly created Goei alien.</returns>
     GameObject SpawnGoei(Vector3 spawnPos)
     {
-        GameObject goei = Instantiate(goeiObject, spawnPos, Quaternion.identity);
+        GameObject goei = Instantiate(goeiObject, spawnPos, Quaternion.Euler(-90, 90, 0));
         goei.transform.SetParent(transform);
         AlienController alienController = goei.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.Goei;
         alienController.Speed = alienSpeed;
+        alienController.BulletSpeed = alienBulletSpeed;
         return goei;
     }
 
@@ -331,12 +366,13 @@ public class SpawnerController : MonoBehaviour
     /// <returns>The newly created Stringer alien,</returns>
     GameObject SpawnStringer(Vector3 spawnPos)
     {
-        GameObject stringer = Instantiate(stringerObject, spawnPos, Quaternion.identity);
+        GameObject stringer = Instantiate(stringerObject, spawnPos, Quaternion.Euler(-90, 90, 0));
         stringer.transform.SetParent(transform);
         AlienController alienController = stringer.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.Stringer;
         alienController.Speed = alienSpeed;
+        alienController.BulletSpeed = alienBulletSpeed;
         return stringer;
     }
 
@@ -347,12 +383,32 @@ public class SpawnerController : MonoBehaviour
     /// <returns>The newly created Boss Galaga alien.</returns>
     GameObject SpawnBossGalaga(Vector3 spawnPos)
     {
-        GameObject bossGalaga = Instantiate(bossGalagaObject, spawnPos, Quaternion.identity);
+        GameObject bossGalaga = Instantiate(bossGalagaObject, spawnPos, Quaternion.Euler(-90, 90, 0));
         bossGalaga.transform.SetParent(transform);
         AlienController alienController = bossGalaga.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.BossGalaga;
         alienController.Speed = alienSpeed;
+        alienController.BulletSpeed = alienBulletSpeed;
         return bossGalaga;
+    }
+
+    /*
+    public void RemoveAlien(GameObject alien) {
+        aliens.Remove(alien);
+    }
+    */
+
+    /// <summary>
+    /// Clears the entire alien grid.
+    /// </summary>
+    public void ClearGrid() {
+        foreach (GameObject alien in aliens) {
+            AlienController alienController = alien.GetComponent<AlienController>();
+            alienController.ClearBullets();
+            Destroy(alien);
+        }
+
+        aliens.Clear();
     }
 }

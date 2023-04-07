@@ -4,7 +4,7 @@
  * Summary: Manages the game's flow.
  * 
  * Author: Kurt Campbell
- * Date: 19 March 2023
+ * Created: 19 March 2023
  * 
  * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
  * Donald Osborn.
@@ -15,11 +15,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using Random = System.Random;
+using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    // The current state of the game.
     public GameState state;
 
     // Player instance.
@@ -28,16 +33,32 @@ public class GameManager : MonoBehaviour
     // Initial lives for the player to beign with.
     public int initialLives;
 
+    // The amount of players that are in the current session.
     private int playerCount;
 
+    // The current player playing.
     [SerializeField]
     private int currentPlayer;
+
+    // The current stage that each player is on.
     private int[] currentStage;
 
     private int[] scores;
     private int highScore;
 
     private int[] lives;
+
+    private SpawnerController spawnerController;
+
+    private int[,] enemyNumberRanges;
+
+    // The amount of aliens to attack one time.
+    public int aliensAttacking;
+
+    private List<GameObject> currAliensAttacking;
+
+    // Check to see if the current player is dead.
+    public bool PlayerDead { get; set; }
 
     public int PlayerCount {
         get {
@@ -73,7 +94,29 @@ public class GameManager : MonoBehaviour
             case GameState.PlayerSelect:
                 // Start the game with player one being up first.
                 MenuManager.Instance.UpdateHighScoreTextField(highScore);
-                currentPlayer = 1; 
+
+                enemyNumberRanges = new int[6 , 2];
+
+                // Stringer number ranges
+                enemyNumberRanges[0, 0] = 0;
+                enemyNumberRanges[0, 1] = 3;
+                enemyNumberRanges[1, 0] = 24;
+                enemyNumberRanges[1, 1] = 39;
+
+                // Boss Galaga number ranges
+                enemyNumberRanges[2, 0] = 8;
+                enemyNumberRanges[2, 1] = 11;
+
+                // Goei number ranges
+                enemyNumberRanges[3, 0] = 4;
+                enemyNumberRanges[3, 1] = 7;
+                enemyNumberRanges[4, 0] = 12;
+                enemyNumberRanges[4, 1] = 15;
+                enemyNumberRanges[5, 0] = 16;
+                enemyNumberRanges[5, 1] = 23;
+
+                currentPlayer = 1;
+                PlayerDead = false;
                 break;
             case GameState.DisplayStageText:
                 // If scores and lives does not exist for the players,
@@ -84,11 +127,13 @@ public class GameManager : MonoBehaviour
 
                 if (lives == null) {
                     InitLives();
-                    MenuManager.Instance.UpdateLiveCounterText(lives[currentPlayer - 1]);
+
+                    // Initialize the stage counters.
+                    InitStageCounters();
                 }
 
-                // Initialize the stage counters.
-                InitStageCounters();
+                // Update the lives text field.
+                UpdateLivesTextField();
 
                 // Update the stage counter text field.
                 MenuManager.Instance.UpdateStageCounterText(currentStage[currentPlayer - 1]);
@@ -100,31 +145,113 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.LoadEnemies:
                 GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
-                SpawnerController spawnerController = spawner.GetComponent<SpawnerController>();
+                spawnerController = spawner.GetComponent<SpawnerController>();
 
                 // Loads the aliens into their proper positions.    
                 spawnerController.SpawnAliens();
+                
                 break;
-            case GameState.EnemiesFall:
-                // TODO: Implement the logic to let the aliens start falling.
+            case GameState.EnemiesAttack:
+                
+                int alienCount = spawnerController.Aliens.Count;
 
-
-
+                if (alienCount == 0) {
+                    currentStage[currentPlayer - 1]++;
+                    UpdateGameState(GameState.DisplayStageText);
+                } else {
+                    currAliensAttacking = new List<GameObject>();
+                    Debug.Log(currentPlayer + "'s Aliens Attack!");
+                    StartCoroutine(AlienAttack());
+                }
+            
                 break;
             case GameState.SwitchPlayer:
-                // TODO: Implement the ability to switch players if player
-                // count is two.
+                ClearAliens();
+
+                if (currentPlayer == 1) {
+                    currentPlayer++;
+                } else {
+                    currentPlayer--;
+                }
+
+                if (lives[currentPlayer - 1] > 0) {
+                    UpdateGameState(GameState.DisplayStageText);
+                } else {
+                    UpdateGameState(GameState.GameOver);
+                }
 
                 break;
             case GameState.GameOver:
                 // TODO: Set the Game Over panel active within the Canvas.
 
-
-
                 //PlayerPrefs.SetInt("High Score");
+
+                Destroy(MenuManager.Instance.canvas.gameObject);
+                Destroy(MenuManager.Instance.gameObject);
+                Destroy(this.gameObject);
+
+                SceneManager.LoadScene(0);
+                
                 break;
             default:
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Updates the current player's score based on the destoryed alien.
+    /// </summary>
+    /// <param name="alienType">The type of alien that was destroyed</param>
+    /// <param name="attacking">The state whether or not the alien was attacking.</param>
+    public void UpdateScore(EnemyType alienType, bool attacking) {
+        switch (alienType) {
+            case EnemyType.Goei:
+                if (attacking) {
+                    scores[currentPlayer - 1] += 160;
+                } else {
+                    scores[currentPlayer - 1] += 80;
+                }
+                break;
+            case EnemyType.Stringer:
+                if (attacking) {
+                    scores[currentPlayer - 1] += 100;
+                } else {
+                    scores[currentPlayer - 1] += 50;
+                }
+                break;
+            case EnemyType.BossGalaga:
+                if (attacking) {
+                    scores[currentPlayer - 1] += 400;
+                } else {
+                    scores[currentPlayer - 1] += 150;
+                }
+                break;
+        }
+
+
+        MenuManager.Instance.UpdateScoreTextFields(scores[currentPlayer - 1], currentPlayer);
+    }
+
+    /// <summary>
+    /// Removes the alien object from the attacking list.
+    /// </summary>
+    /// <param name="alien"></param>
+    public void RemoveAlienAttacking(GameObject alien) {
+        currAliensAttacking.Remove(alien);
+    }
+
+    /// <summary>
+    /// Removes the alien from the current player's grid.
+    /// </summary>
+    /// <param name="alien"></param>
+    public void RemoveAlien(GameObject alien) {
+        AlienController alienController = alien.GetComponent<AlienController>();
+        
+        //playerAlienGrids[currentPlayer - 1].Remove(alien);
+        spawnerController.Aliens.Remove(alien);
+        
+        if (alienController.Attack) {
+            currAliensAttacking.Remove(alien);
         }
     }
 
@@ -179,16 +306,32 @@ public class GameManager : MonoBehaviour
     private IEnumerator DisplayStage() {
         yield return new WaitForSeconds(1f);
 
-        if (currentStage[currentPlayer - 1] == 1) {
+        bool playerSpawned = false;
+
+        if (currentStage[currentPlayer - 1] > 1) {
+            MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
+        } else if (currentStage[currentPlayer - 1] == 1 && lives[currentPlayer - 1] == initialLives) {
             MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
             MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
+            yield return new WaitForSeconds(3f);
+            MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
+            SpawnPlayer();
+            playerSpawned = true;
+        } 
+        
+        if (PlayerDead) {
+            PlayerDead = false;
+            // Displays the ready state text.
+            if (lives.Length == 2) {
+                MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
+                MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
+            }
+            
+            MenuManager.Instance.UpdateCurrentStageTextField();
+            if (!playerSpawned) {
+                SpawnPlayer();
+            }
         }
-
-        yield return new WaitForSeconds(3f);
-
-        MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
-
-        SpawnPlayer();
 
         MenuManager.Instance.currentStageText.gameObject.SetActive(true);
 
@@ -204,8 +347,154 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void SpawnPlayer() {
         Vector3 spawnPos = new Vector3(-1.1f, 0f, -4f);
-        Instantiate(player, spawnPos, Quaternion.identity);
+        Instantiate(player, spawnPos, Quaternion.Euler(-90, 90, 0));
     }
+
+    /// <summary>
+    /// Let the aliens start attacking the player.
+    /// </summary>
+    /// <returns>
+    /// The amount of seconds before letting another alien
+    /// attack.
+    /// </returns>
+    private IEnumerator AlienAttack() {
+        List<GameObject> aliens = spawnerController.Aliens;
+        
+        // If all of the aliens have been destroyed, we will increase
+        // the stage counter and proceed to the next stage.
+        Random randomizer = new Random();
+        int alienIndex = 0;
+        int resetAlien = randomizer.Next(1, 3);
+        EnemyAttackState enemyAttackState = EnemyAttackState.Phase1;
+
+        if (aliens.Count == 0) {
+            enemyAttackState = EnemyAttackState.Done;
+        }
+
+        while (enemyAttackState != EnemyAttackState.Done) {
+            for (int i = 0; i < aliensAttacking; i++) {
+                // Let a Goei or Stringer attack.
+                if (enemyAttackState == EnemyAttackState.Phase1) {
+                    EnemyType alienType = (EnemyType)randomizer.Next(0, 2);
+                    int range = 0;
+
+                    if (alienType == EnemyType.Goei) {
+                        range = randomizer.Next(3, 6);
+                    } else {
+                        range = randomizer.Next(0, 2);
+                    }
+
+                    alienIndex = randomizer.Next(0, aliens.Count);
+
+                    if (aliens.Count != 0) {
+                        GameObject alien = aliens[alienIndex];
+
+                        AlienController alienController = alien.GetComponent<AlienController>();
+                        alienController.Attack = true;
+                        alienController.ResetToPosition = (resetAlien == i + 1);
+                        currAliensAttacking.Add(alien);
+                    }
+                }
+
+                // Let a Goei, Stringer, or Boss Galaga attack.
+                if (enemyAttackState == EnemyAttackState.Phase2 && i == 0) {
+                    EnemyType alienType = (EnemyType)randomizer.Next(0, 3);
+                    int range = 0;
+
+                    if (alienType == EnemyType.Goei) {
+                        range = randomizer.Next(3, 6);
+                    } else if (alienType == EnemyType.Stringer) {
+                        range = randomizer.Next(0, 2);
+                    } else {
+                        range = 2;
+                    }
+
+                    alienIndex = randomizer.Next(0, aliens.Count);
+
+                    if (aliens.Count != 0) {
+                        GameObject alien = aliens[alienIndex];
+
+                        AlienController alienController = alien.GetComponent<AlienController>();
+                        alienController.Attack = true;
+                        alienController.ResetToPosition = (resetAlien == i + 1);
+                        currAliensAttacking.Add(alien);
+                    }
+                    
+                }
+            }
+
+            
+            if (PlayerDead) {
+                lives[currentPlayer - 1]--;
+
+                // If there are two players playing, we want to switch
+                // to the current player.
+                if (playerCount == 2) {
+                    UpdateGameState(GameState.SwitchPlayer);
+                    yield break;
+                }
+
+                // If the current single player has lives, we
+                // must reset the alien positions, update the live counter text
+                // field, and update the game state to display the stage.
+                if (lives[currentPlayer - 1] > 0) {
+                    // Reset the aliens to go back to their grid position.
+                    //ResetAliens(currAliensAttacking);
+                    
+                    ClearAliens();
+                    UpdateLivesTextField();
+                    UpdateGameState(GameState.DisplayStageText);
+                    yield break;
+                }
+
+                UpdateGameState(GameState.GameOver);
+                yield break;
+            } else if (aliens.Count == 0) {
+                enemyAttackState = EnemyAttackState.Done;
+            } else if (enemyAttackState == EnemyAttackState.Phase1) {
+                enemyAttackState = EnemyAttackState.Phase2;
+            } else {
+                enemyAttackState = EnemyAttackState.Phase1;
+            }
+
+            if (aliens.Count != 0) {
+                // Timeout before letting another alien attack.
+                yield return new WaitForSeconds(3f);
+                ResetAliens(currAliensAttacking);
+            }
+        }
+
+        if (aliens.Count == 0) {
+            currentStage[currentPlayer - 1]++;
+            UpdateGameState(GameState.DisplayStageText);
+            yield break;
+        }
+    }
+
+    /// <summary>
+    /// Clears the entire alien grid from the grid object.
+    /// </summary>
+    private void ClearAliens() {
+        spawnerController.ClearGrid();
+    }
+
+    private void ResetAliens(List<GameObject> currAliensAttacking) {
+        int numOfAliensAttacking = currAliensAttacking.Count;
+
+        while (currAliensAttacking.Count != 0) {
+            AlienController alienController = currAliensAttacking[--numOfAliensAttacking].GetComponent<AlienController>();
+            alienController.ResetToPosition = true;
+            currAliensAttacking.RemoveAt(numOfAliensAttacking);
+        }
+    }
+
+    /// <summary>
+    /// Update the live counter text field for the current player.
+    /// </summary>
+    private void UpdateLivesTextField() {
+        MenuManager.Instance.UpdateLiveCounterText(lives[currentPlayer - 1]);
+    }
+
 }
 
 /// <summary>
@@ -216,7 +505,7 @@ public enum GameState
     PlayerSelect,
     DisplayStageText,
     LoadEnemies,
-    EnemiesFall,
+    EnemiesAttack,
     SwitchPlayer,
     GameOver
 }
@@ -242,4 +531,18 @@ public enum LoadEnemyState
     Phase4,
     Phase5,
     Done
+}
+
+/// <summary>
+/// Attack phases to which aliens can attack for the current timeframe.
+/// </summary>
+public enum EnemyAttackState {
+    Phase1,
+    Phase2,
+    Done
+}
+
+public enum BulletType {
+    Player,
+    Alien
 }
