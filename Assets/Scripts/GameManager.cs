@@ -60,6 +60,8 @@ public class GameManager : MonoBehaviour
     // Check to see if the current player is dead.
     public bool PlayerDead { get; set; }
 
+    public bool Training { get; set; }
+
     public int PlayerCount {
         get {
             return playerCount;
@@ -155,15 +157,10 @@ public class GameManager : MonoBehaviour
                 
                 int alienCount = spawnerController.Aliens.Count;
 
-                if (alienCount == 0) {
-                    currentStage[currentPlayer - 1]++;
-                    UpdateGameState(GameState.DisplayStageText);
-                } else {
-                    currAliensAttacking = new List<GameObject>();
-                    Debug.Log(currentPlayer + "'s Aliens Attack!");
-                    StartCoroutine(AlienAttack());
-                }
-            
+                currAliensAttacking = new List<GameObject>();
+                Debug.Log(currentPlayer + "'s Aliens Attack!");
+                StartCoroutine(AlienAttack());
+
                 break;
             case GameState.SwitchPlayer:
                 ClearAliens();
@@ -443,7 +440,13 @@ public class GameManager : MonoBehaviour
                     
                     ClearAliens();
                     UpdateLivesTextField();
-                    UpdateGameState(GameState.DisplayStageText);
+
+                    if (Training) {
+                        UpdateGameState(GameState.LoadEnemies);
+                    } else {
+                        UpdateGameState(GameState.DisplayStageText);
+                    }
+
                     yield break;
                 }
 
@@ -462,6 +465,13 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(3f);
                 ResetAliens(currAliensAttacking);
             }
+        }
+
+        // When training, it should switch to the next stage.
+        if (Training) {
+            currentStage[currentPlayer - 1]++;
+            UpdateGameState(GameState.LoadEnemies);
+            yield break;
         }
 
         if (aliens.Count == 0) {

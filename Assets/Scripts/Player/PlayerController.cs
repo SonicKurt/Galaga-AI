@@ -75,6 +75,14 @@ public class PlayerController : MonoBehaviour {
         if (other.tag == "Bullet") {
             BulletController bulletController = other.GetComponent<BulletController>();
             if (bulletController.Type == BulletType.Alien) {
+                // If the alien's bullet attacked the player in training mode,
+                // add a reward to the alien agent.
+                if (GameManager.Instance.Training) {
+                    GameObject alien = bulletController.Shooter;
+                    AlienAgent alienAgent = alien.GetComponent<AlienAgent>();
+                    alienAgent.AddReward(1f);
+                }
+
                 Destroy(other.gameObject);
                 GameManager.Instance.PlayerDead = true;
                 Destroy(this.gameObject);
@@ -88,6 +96,7 @@ public class PlayerController : MonoBehaviour {
             alienController.DestoryAlien();
             GameManager.Instance.PlayerDead = true;
             Destroy(this.gameObject);
+            
         }
     }
 }

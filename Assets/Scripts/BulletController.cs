@@ -11,6 +11,8 @@ public class BulletController : MonoBehaviour
     public float bottomBounds;
 
     public BulletType Type { get; set; }
+
+    public GameObject Shooter { get; set; }
     
     // Start is called before the first frame update
     void Start()

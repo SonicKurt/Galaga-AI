@@ -223,6 +223,7 @@ public class AlienController : MonoBehaviour
         for (int i = 0; i < amountOfBullets; i++) {
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             BulletController bulletController = bullet.GetComponent<BulletController>();
+            bulletController.Shooter = this.gameObject;
             bulletController.Type = BulletType.Alien;
             yield return new WaitForSeconds(0.5f);
         }
