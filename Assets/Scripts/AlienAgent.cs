@@ -1,5 +1,6 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 
 public class AlienAgent : Agent
@@ -13,10 +14,29 @@ public class AlienAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        GameManager.Instance.Training = true;
-        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
+        // NOTE: This code snippet would be useful for the player, not the aliens.
+        /*
+        BehaviorParameters behaviorParameters = GetComponent<BehaviorParameters>();
+        if (behaviorParameters.BehaviorType == BehaviorType.Default) {
+            GameManager.Instance.PlayerCount = 1;
+            GameManager.Instance.Training = true;
+            GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
+        }
+        */
+
+
 
     }
 
-    
+    public override void Heuristic(in ActionBuffers actionsOut) {
+        
+    }
+
+    public override void OnActionReceived(ActionBuffers actions) {
+        //if (GameManager.Instance.)
+
+
+    }
+
+
 }

@@ -19,6 +19,7 @@ using UnityEngine.SocialPlatforms;
 using Random = System.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using UnityEditor.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -252,6 +253,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int getCurrentStage() {
+        return currentStage[currentPlayer - 1];
+    }
+
     /// <summary>
     /// Initialize the scores to start from zero.
     /// </summary>
@@ -362,7 +367,7 @@ public class GameManager : MonoBehaviour
         Random randomizer = new Random();
         int alienIndex = 0;
         int resetAlien = randomizer.Next(1, 3);
-        EnemyAttackState enemyAttackState = EnemyAttackState.Phase1;
+        EnemyAttackState enemyAttackState = EnemyAttackState.Attack;
 
         if (aliens.Count == 0) {
             enemyAttackState = EnemyAttackState.Done;
@@ -370,53 +375,16 @@ public class GameManager : MonoBehaviour
 
         while (enemyAttackState != EnemyAttackState.Done) {
             for (int i = 0; i < aliensAttacking; i++) {
-                // Let a Goei or Stringer attack.
-                if (enemyAttackState == EnemyAttackState.Phase1) {
-                    EnemyType alienType = (EnemyType)randomizer.Next(0, 2);
-                    int range = 0;
+                alienIndex = randomizer.Next(0, aliens.Count);
 
-                    if (alienType == EnemyType.Goei) {
-                        range = randomizer.Next(3, 6);
-                    } else {
-                        range = randomizer.Next(0, 2);
-                    }
+                if (aliens.Count != 0) {
+                    GameObject alien = aliens[alienIndex];
 
-                    alienIndex = randomizer.Next(0, aliens.Count);
+                    AlienController alienController = alien.GetComponent<AlienController>();
+                    alienController.Attack = true;
 
-                    if (aliens.Count != 0) {
-                        GameObject alien = aliens[alienIndex];
-
-                        AlienController alienController = alien.GetComponent<AlienController>();
-                        alienController.Attack = true;
-                        alienController.ResetToPosition = (resetAlien == i + 1);
-                        currAliensAttacking.Add(alien);
-                    }
-                }
-
-                // Let a Goei, Stringer, or Boss Galaga attack.
-                if (enemyAttackState == EnemyAttackState.Phase2 && i == 0) {
-                    EnemyType alienType = (EnemyType)randomizer.Next(0, 3);
-                    int range = 0;
-
-                    if (alienType == EnemyType.Goei) {
-                        range = randomizer.Next(3, 6);
-                    } else if (alienType == EnemyType.Stringer) {
-                        range = randomizer.Next(0, 2);
-                    } else {
-                        range = 2;
-                    }
-
-                    alienIndex = randomizer.Next(0, aliens.Count);
-
-                    if (aliens.Count != 0) {
-                        GameObject alien = aliens[alienIndex];
-
-                        AlienController alienController = alien.GetComponent<AlienController>();
-                        alienController.Attack = true;
-                        alienController.ResetToPosition = (resetAlien == i + 1);
-                        currAliensAttacking.Add(alien);
-                    }
-                    
+                    alienController.ResetToPosition = (resetAlien == i + 1);
+                    currAliensAttacking.Add(alien);
                 }
             }
 
@@ -452,15 +420,11 @@ public class GameManager : MonoBehaviour
 
                 UpdateGameState(GameState.GameOver);
                 yield break;
-            } else if (aliens.Count == 0) {
+            } 
+            
+            if (aliens.Count == 0) {
                 enemyAttackState = EnemyAttackState.Done;
-            } else if (enemyAttackState == EnemyAttackState.Phase1) {
-                enemyAttackState = EnemyAttackState.Phase2;
             } else {
-                enemyAttackState = EnemyAttackState.Phase1;
-            }
-
-            if (aliens.Count != 0) {
                 // Timeout before letting another alien attack.
                 yield return new WaitForSeconds(3f);
                 ResetAliens(currAliensAttacking);
@@ -547,8 +511,7 @@ public enum LoadEnemyState
 /// Attack phases to which aliens can attack for the current timeframe.
 /// </summary>
 public enum EnemyAttackState {
-    Phase1,
-    Phase2,
+    Attack,
     Done
 }
 
