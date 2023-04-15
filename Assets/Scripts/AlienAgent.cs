@@ -33,10 +33,11 @@ public class AlienAgent : Agent
     }
 
     public override void OnActionReceived(ActionBuffers actions) {
-        //if (GameManager.Instance.)
+        bool attack = alienController.Attack;
+        
+        if (attack) {
 
+        }
 
     }
-
-
 }

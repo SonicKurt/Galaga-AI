@@ -190,7 +190,16 @@ public class AlienController : MonoBehaviour
                 timesShot = 0;
             } else {
                 //transform.position -= Vector3.up * speed * Time.deltaTime;
-                transform.position -= Vector3.forward * speed * Time.deltaTime;
+                Vector3 pos = transform.position;
+                if (pos.x == -12) {
+                    pos -= new Vector3(-1, 0, 1) * speed * Time.deltaTime;
+                } else {
+                    pos -= new Vector3(1, 0, 1) * speed * Time.deltaTime;
+                }
+
+                pos.x = Mathf.Clamp(pos.x, -12, 12);
+
+                transform.position = pos;
 
                 int timeToShoot = randomizer.Next(0, 2);
                 if (timeToShoot == 1 && timesShot == 0) {
