@@ -56,16 +56,16 @@ public class SpawnerController : MonoBehaviour
 
     private void Awake()
     {
-
+        grid = new Vector3[gridX, gridZ];
+        aliens = new List<GameObject>();
+        gridTransform = transform;
+        timeDecrement = 0;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        grid = new Vector3[gridX, gridZ];
-        aliens = new List<GameObject>();
-        gridTransform = transform;
-        timeDecrement = 0;
+       
     }
 
     private void Update()

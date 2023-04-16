@@ -14,6 +14,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = System.Random;
 
 public class AlienController : MonoBehaviour
@@ -57,6 +58,9 @@ public class AlienController : MonoBehaviour
     private List<GameObject> bullets;
 
     private AudioSource dieSoundEffect;
+
+    public float HorizontalInput { get; set; } 
+
     public EnemyType Type
     {
         get
@@ -186,18 +190,16 @@ public class AlienController : MonoBehaviour
 
                 attack = !resetToPosition;
 
-                ClearBullets();
+                //ClearBullets();
                 timesShot = 0;
+                
             } else {
-                //transform.position -= Vector3.up * speed * Time.deltaTime;
                 Vector3 pos = transform.position;
-                if (pos.x == -12) {
-                    pos -= new Vector3(-1, 0, 1) * speed * Time.deltaTime;
-                } else {
-                    pos -= new Vector3(1, 0, 1) * speed * Time.deltaTime;
-                }
+                
+                pos -= new Vector3(0, 0, 1) * speed * Time.deltaTime;
 
-                pos.x = Mathf.Clamp(pos.x, -12, 12);
+                Debug.Log(HorizontalInput);
+                pos.x = Mathf.Clamp(pos.x + HorizontalInput, -12, 12);
 
                 transform.position = pos;
 
@@ -219,6 +221,10 @@ public class AlienController : MonoBehaviour
                 resetToPosition = false;
             }
         }
+    }
+
+    void OnMovement(InputValue value) {
+        HorizontalInput = value.Get<float>();
     }
 
     /// <summary>

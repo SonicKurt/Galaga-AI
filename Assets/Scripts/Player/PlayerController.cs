@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
-    public float movementValue;
     public float movementSpeed;
     public float maxProjectiles;
     public GameObject projectileToSpawn;
@@ -17,6 +16,9 @@ public class PlayerController : MonoBehaviour {
     private float startTime;
     private bool reload;
 
+    public bool Training { get; set; }
+
+    public float HorizontalInput { get; set; }
 
     void OnFire() {
         if (!reload) {
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     void OnMovement(InputValue value) {
-        movementValue = value.Get<float>();
+        HorizontalInput = value.Get<float>();
     }
 
     void OnPause() {
@@ -50,8 +52,13 @@ public class PlayerController : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update(){
-        float horizontalMovement = movementValue * movementSpeed * Time.deltaTime;
+    void Update() {
+        
+        if (Training) {
+                
+        }
+
+        float horizontalMovement = HorizontalInput * movementSpeed * Time.deltaTime;
         Vector3 pos = transform.position;
 
         // Clamps the horizontal movement to the left and right boundaries from the origin.
@@ -77,7 +84,7 @@ public class PlayerController : MonoBehaviour {
             if (bulletController.Type == BulletType.Alien) {
                 // If the alien's bullet attacked the player in training mode,
                 // add a reward to the alien agent.
-                if (GameManager.Instance.Training) {
+                if (GameManager.Instance.training) {
                     GameObject alien = bulletController.Shooter;
                     AlienAgent alienAgent = alien.GetComponent<AlienAgent>();
                     alienAgent.AddReward(1f);

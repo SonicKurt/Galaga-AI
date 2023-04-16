@@ -20,6 +20,7 @@ using Random = System.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UnityEditor.SceneManagement;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -61,7 +62,7 @@ public class GameManager : MonoBehaviour
     // Check to see if the current player is dead.
     public bool PlayerDead { get; set; }
 
-    public bool Training { get; set; }
+    public bool training;
 
     public int PlayerCount {
         get {
@@ -82,7 +83,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateGameState(GameState.PlayerSelect);
+        if (training) {
+            playerCount = 1;
+            currentPlayer = 1;
+            PlayerDead = false;
+            UpdateGameState(GameState.DisplayStageText);
+        } else {
+            UpdateGameState(GameState.PlayerSelect);
+        }
     }
 
     /// <summary>
@@ -149,6 +157,7 @@ public class GameManager : MonoBehaviour
             case GameState.LoadEnemies:
                 GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
                 spawnerController = spawner.GetComponent<SpawnerController>();
+                Debug.Log(spawnerController.alienBulletSpeed);
 
                 // Loads the aliens into their proper positions.    
                 spawnerController.SpawnAliens();
@@ -317,7 +326,11 @@ public class GameManager : MonoBehaviour
             MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
             yield return new WaitForSeconds(3f);
             MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
-            SpawnPlayer();
+            
+            if (!training) {
+                SpawnPlayer();
+            }
+            
             playerSpawned = true;
         } 
         
@@ -409,7 +422,7 @@ public class GameManager : MonoBehaviour
                     ClearAliens();
                     UpdateLivesTextField();
 
-                    if (Training) {
+                    if (training) {
                         UpdateGameState(GameState.LoadEnemies);
                     } else {
                         UpdateGameState(GameState.DisplayStageText);
@@ -432,7 +445,7 @@ public class GameManager : MonoBehaviour
         }
 
         // When training, it should switch to the next stage.
-        if (Training) {
+        if (training) {
             currentStage[currentPlayer - 1]++;
             UpdateGameState(GameState.LoadEnemies);
             yield break;
