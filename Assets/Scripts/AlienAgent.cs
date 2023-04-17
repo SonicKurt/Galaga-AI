@@ -32,7 +32,6 @@ public class AlienAgent : Agent
     }
     */
 
-    
     public override void Heuristic(in ActionBuffers actionsOut) {
         int horizontalInput = Mathf.RoundToInt(alienController.HorizontalInput);
 
@@ -40,7 +39,6 @@ public class AlienAgent : Agent
         actions[0] = horizontalInput;
     }
     
-
     public override void OnActionReceived(ActionBuffers actions) {
         bool attack = alienController.Attack;
         
