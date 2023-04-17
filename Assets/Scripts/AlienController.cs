@@ -196,10 +196,7 @@ public class AlienController : MonoBehaviour
             } else {
                 Vector3 pos = transform.position;
                 
-                pos -= new Vector3(0, 0, 1) * speed * Time.deltaTime;
-
-                Debug.Log(HorizontalInput);
-                pos.x = Mathf.Clamp(pos.x + HorizontalInput, -12, 12);
+                pos -= new Vector3(Mathf.Clamp(HorizontalInput, -12f, 12f), 0, 1) * speed * Time.deltaTime;
 
                 transform.position = pos;
 
@@ -221,10 +218,6 @@ public class AlienController : MonoBehaviour
                 resetToPosition = false;
             }
         }
-    }
-
-    void OnMovement(InputValue value) {
-        HorizontalInput = value.Get<float>();
     }
 
     /// <summary>

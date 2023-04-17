@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour {
     /// alien or one of its bullets.</param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Bullet") {
+         if (other.tag == "Bullet") {
             BulletController bulletController = other.GetComponent<BulletController>();
             if (bulletController.Type == BulletType.Alien) {
                 // If the alien's bullet attacked the player in training mode,
@@ -95,8 +95,7 @@ public class PlayerController : MonoBehaviour {
                 Destroy(this.gameObject);
             }   
         }
-
-        if (other.tag == "Goei"
+        else if (other.tag == "Goei"
             || other.tag == "Stringer"
             || other.tag == "BossGalaga") {
             AlienController alienController = other.gameObject.GetComponent<AlienController>();

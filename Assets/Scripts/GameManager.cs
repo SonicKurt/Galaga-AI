@@ -447,7 +447,7 @@ public class GameManager : MonoBehaviour
         // When training, it should switch to the next stage.
         if (training) {
             currentStage[currentPlayer - 1]++;
-            UpdateGameState(GameState.LoadEnemies);
+            UpdateGameState(GameState.DisplayStageText);
             yield break;
         }
 

@@ -2,6 +2,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using UnityEngine;
+using Random = System.Random;
 
 public class AlienAgent : Agent
 {
@@ -33,7 +34,8 @@ public class AlienAgent : Agent
     */
 
     public override void Heuristic(in ActionBuffers actionsOut) {
-        int horizontalInput = Mathf.RoundToInt(alienController.HorizontalInput);
+        Random random = new Random();
+        int horizontalInput = random.Next(-12, 13);
 
         ActionSegment<int> actions = actionsOut.DiscreteActions;
         actions[0] = horizontalInput;
@@ -44,10 +46,10 @@ public class AlienAgent : Agent
         
         if (attack) {
             float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
+            Debug.Log("Horizontal: " + horizontalInput);
 
-            if (behaviorParameters.BehaviorType != BehaviorType.HeuristicOnly) {
-                alienController.HorizontalInput = horizontalInput;
-            }
+
+            alienController.HorizontalInput = horizontalInput;
         }
     }
 }
