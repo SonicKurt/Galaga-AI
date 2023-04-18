@@ -111,5 +111,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 9
-  topBounds: 30
+  topBounds: 24
   bottomBounds: -9

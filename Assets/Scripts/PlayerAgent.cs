@@ -21,6 +21,7 @@ public class PlayerAgent : Agent
         // NOTE: This code snippet would be useful for the player, not the aliens.
 
         GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
+        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
 
         /*
         if (behaviorParameters.BehaviorType == BehaviorType.Default) {
@@ -44,10 +45,13 @@ public class PlayerAgent : Agent
         float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
         bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
 
+        
         playerController.HorizontalInput = horizontalInput;
 
         if (shoot) {
             playerController.OnFire();
         }
+        
+        
     }
 }

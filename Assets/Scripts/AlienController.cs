@@ -167,6 +167,7 @@ public class AlienController : MonoBehaviour
         timesShot = 0;
         dieSoundEffect = GetComponent<AudioSource>();
         startTime = Time.time;
+        bullets = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -238,6 +239,7 @@ public class AlienController : MonoBehaviour
             bulletController.Shooter = this.gameObject;
             bulletController.Type = BulletType.Alien;
             startTime = Time.time + ShootDelay;
+            bullets.Add(bullet);
             timesShot++;
         }
     }

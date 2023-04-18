@@ -151,13 +151,15 @@ public class GameManager : MonoBehaviour
                 // Displays the current stage that the player is on.
                 // The MenuManager should consist of the text fields to display
                 // the current stage.
-                StartCoroutine(DisplayStage());
+                if (!training) {
+                    StartCoroutine(DisplayStage());
+                } 
+
                 break;
             case GameState.LoadEnemies:
                 GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
                 spawnerController = spawner.GetComponent<SpawnerController>();
-                Debug.Log(spawnerController.alienBulletSpeed);
-
+                
                 // Loads the aliens into their proper positions.    
                 spawnerController.SpawnAliens();
                 
@@ -201,7 +203,12 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.ResetEpisode:
                 lives[currentPlayer - 1] = initialLives;
-                
+                ClearAliens();
+                PlayerDead = false;
+
+                Random randomizer = new Random();
+                float newAlienSpeed = randomizer.Next(-1, 1);
+                spawnerController.increaseAlienSpeed(newAlienSpeed);
                 break;
             default:
                 break;
@@ -271,6 +278,17 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     public int getCurrentStage() {
         return currentStage[currentPlayer - 1];
+    }
+
+    /// <summary>
+    /// Removes all the bullets from the gameplay scene.
+    /// </summary>
+    public void removeAllBulletsFromScene() {
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
+
+        foreach (GameObject bullet in bullets) {
+            Destroy(bullet);
+        }
     }
 
     /// <summary>
@@ -407,7 +425,6 @@ public class GameManager : MonoBehaviour
                     currAliensAttacking.Add(alien);
                 }
             }
-
             
             if (PlayerDead) {
                 if (training) {
@@ -442,22 +459,22 @@ public class GameManager : MonoBehaviour
 
                 UpdateGameState(GameState.GameOver);
                 yield break;
-            } 
-            
+            }
+
+            // Timeout before letting another alien attack.
+            yield return new WaitForSeconds(2f);
+
             if (aliens.Count == 0) {
                 enemyAttackState = EnemyAttackState.Done;
             } else {
-                // Timeout before letting another alien attack.
-                yield return new WaitForSeconds(3f);
                 ResetAliens(currAliensAttacking);
             }
         }
 
-        // When training, it should switch to the next stage.
         if (training) {
-            currentStage[currentPlayer - 1]++;
-            UpdateGameState(GameState.DisplayStageText);
-            yield break;
+            UpdateGameState(GameState.ResetEpisode);
+            PlayerAgent playerAgent = player.GetComponent<PlayerAgent>();
+            playerAgent.EndEpisode();
         }
 
         if (aliens.Count == 0) {

@@ -82,25 +82,34 @@ public class PlayerController : MonoBehaviour {
          if (other.tag == "Bullet") {
             BulletController bulletController = other.GetComponent<BulletController>();
             if (bulletController.Type == BulletType.Alien) {
+                GameObject alien = bulletController.Shooter;
+
                 // If the alien's bullet attacked the player in training mode,
                 // add a reward to the alien agent.
                 if (GameManager.Instance.training) {
-                    GameObject alien = bulletController.Shooter;
-                    AlienAgent alienAgent = alien.GetComponent<AlienAgent>();
-                    alienAgent.AddReward(1f);
-                }
+                    if (alien != null) {
+                        AlienAgent alienAgent = alien.GetComponent<AlienAgent>();
+                        alienAgent.AddReward(1f);
+                    }
 
-                Destroy(other.gameObject);
-                GameManager.Instance.PlayerDead = true;
+                    GameManager.Instance.removeAllBulletsFromScene();
+                    Destroy(other.gameObject);
+                    GameManager.Instance.PlayerDead = true;
 
-                if (!GameManager.Instance.training) {
+                    PlayerAgent playerAgent = GetComponent<PlayerAgent>();
+                    GameManager.Instance.StopAllCoroutines();
+                    GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                    playerAgent.EndEpisode();
+                } else {
+                    Destroy(other.gameObject);
+                    GameManager.Instance.PlayerDead = true;
                     Destroy(this.gameObject);
                 }
+                
 
                 return;
             }   
         }
-
 
         if (other.tag == "Goei"
             || other.tag == "Stringer"
@@ -112,10 +121,11 @@ public class PlayerController : MonoBehaviour {
             // The player agent needs to be present at all times.
             if (GameManager.Instance.training) {
                 PlayerAgent playerAgent = GetComponent<PlayerAgent>();
+                GameManager.Instance.StopAllCoroutines();
                 GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
-                GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
+                GameManager.Instance.removeAllBulletsFromScene();
                 //Destroy(this.gameObject);
-                //playerAgent.EndEpisode();
+                playerAgent.EndEpisode();
             } else {
                 Destroy(this.gameObject);
             }
