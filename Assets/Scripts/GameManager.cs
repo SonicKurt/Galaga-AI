@@ -199,6 +199,10 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadScene(0);
                 
                 break;
+            case GameState.ResetEpisode:
+                lives[currentPlayer - 1] = initialLives;
+                
+                break;
             default:
                 break;
         }
@@ -261,6 +265,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Get the current stage for the current player.
+    /// </summary>
+    /// <returns></returns>
     public int getCurrentStage() {
         return currentStage[currentPlayer - 1];
     }
@@ -402,6 +410,12 @@ public class GameManager : MonoBehaviour
 
             
             if (PlayerDead) {
+                if (training) {
+                    PlayerDead = false;
+                    ClearAliens();
+                    yield break;
+                }
+
                 lives[currentPlayer - 1]--;
 
                 // If there are two players playing, we want to switch
@@ -489,7 +503,8 @@ public enum GameState
     LoadEnemies,
     EnemiesAttack,
     SwitchPlayer,
-    GameOver
+    GameOver,
+    ResetEpisode
 }
 
 /// <summary>

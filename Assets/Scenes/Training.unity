@@ -396,7 +396,7 @@ MonoBehaviour:
   gridX: 5
   gridZ: 10
   gapSize: 2.2
-  alienSpeed: 4
+  alienSpeed: 6
   alienBulletSpeed: 7
   alienSpeedIncrements: 0.5
   alienShootDelay: 0.5
@@ -460,7 +460,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3871639025702104463, guid: 10f333f29ecdcb443925c64b1b97110a, type: 3}
       propertyPath: shootDelay
-      value: 0.33
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4142109889856950492, guid: 10f333f29ecdcb443925c64b1b97110a, type: 3}
       propertyPath: m_Name

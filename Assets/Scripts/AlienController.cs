@@ -202,6 +202,7 @@ public class AlienController : MonoBehaviour
                 Vector3 pos = transform.position;
 
                 pos -= new Vector3(Mathf.Clamp(HorizontalInput, -12f, 12f), 0, 1) * speed * Time.deltaTime;
+                pos.x = Mathf.Clamp(pos.x, -12f, 12f);
 
                 transform.position = pos;
 

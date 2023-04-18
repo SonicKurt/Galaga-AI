@@ -33,7 +33,6 @@ public class AlienAgent : Agent
             bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
             Debug.Log("Horizontal: " + horizontalInput);
 
-
             alienController.HorizontalInput = horizontalInput;
 
             if (shoot) {

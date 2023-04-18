@@ -111,8 +111,11 @@ public class PlayerController : MonoBehaviour {
 
             // The player agent needs to be present at all times.
             if (GameManager.Instance.training) {
-                PlayerAgentKurt playerAgent = GetComponent<PlayerAgentKurt>();
-                playerAgent.EndEpisode();
+                PlayerAgent playerAgent = GetComponent<PlayerAgent>();
+                GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
+                //Destroy(this.gameObject);
+                //playerAgent.EndEpisode();
             } else {
                 Destroy(this.gameObject);
             }

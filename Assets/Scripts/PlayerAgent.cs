@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = System.Random;
 
-public class PlayerAgentKurt : Agent
+public class PlayerAgent : Agent
 {
     private PlayerController playerController;
     private BehaviorParameters behaviorParameters;
