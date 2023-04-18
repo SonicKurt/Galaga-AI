@@ -15,30 +15,14 @@ public class AlienAgent : Agent
         behaviorParameters = GetComponent<BehaviorParameters>();
     }
 
-    /*
-    public override void OnEpisodeBegin()
-    {
-        // NOTE: This code snippet would be useful for the player, not the aliens.
-        
-        BehaviorParameters behaviorParameters = GetComponent<BehaviorParameters>();
-        if (behaviorParameters.BehaviorType == BehaviorType.Default) {
-            GameManager.Instance.PlayerCount = 1;
-            GameManager.Instance.Training = true;
-            GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
-        }
-        
-
-
-
-    }
-    */
-
     public override void Heuristic(in ActionBuffers actionsOut) {
         Random random = new Random();
         int horizontalInput = random.Next(-12, 13);
+        int shoot = random.Next(0, 2);
 
         ActionSegment<int> actions = actionsOut.DiscreteActions;
         actions[0] = horizontalInput;
+        actions[1] = shoot;
     }
     
     public override void OnActionReceived(ActionBuffers actions) {
@@ -46,10 +30,15 @@ public class AlienAgent : Agent
         
         if (attack) {
             float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
+            bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
             Debug.Log("Horizontal: " + horizontalInput);
 
 
             alienController.HorizontalInput = horizontalInput;
+
+            if (shoot) {
+                alienController.ShootBullet();
+            }
         }
     }
 }

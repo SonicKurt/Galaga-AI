@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour {
 
     public float HorizontalInput { get; set; }
 
-    void OnFire() {
+    public void OnFire() {
         if (!reload) {
             shootSoundEffect.Play();
             GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
@@ -92,17 +92,32 @@ public class PlayerController : MonoBehaviour {
 
                 Destroy(other.gameObject);
                 GameManager.Instance.PlayerDead = true;
-                Destroy(this.gameObject);
+
+                if (!GameManager.Instance.training) {
+                    Destroy(this.gameObject);
+                }
+
+                return;
             }   
         }
-        else if (other.tag == "Goei"
+
+
+        if (other.tag == "Goei"
             || other.tag == "Stringer"
             || other.tag == "BossGalaga") {
             AlienController alienController = other.gameObject.GetComponent<AlienController>();
             alienController.DestoryAlien();
             GameManager.Instance.PlayerDead = true;
-            Destroy(this.gameObject);
-            
+
+            // The player agent needs to be present at all times.
+            if (GameManager.Instance.training) {
+                PlayerAgentKurt playerAgent = GetComponent<PlayerAgentKurt>();
+                playerAgent.EndEpisode();
+            } else {
+                Destroy(this.gameObject);
+            }
+
+            return;
         }
     }
 }

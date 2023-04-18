@@ -25,9 +25,12 @@ public class SpawnerController : MonoBehaviour
 
     // The grid cells' padding offset.
     public float gapSize;
+
+    // Alien properties
     public float alienSpeed;
     public float alienBulletSpeed;
     public float alienSpeedIncrements;
+    public float alienShootDelay;
 
     private float timeDecrement;
 
@@ -363,10 +366,9 @@ public class SpawnerController : MonoBehaviour
         AlienController alienController = goei.GetComponent<AlienController>();
         alienController.SpawnPos = spawnPos;
         alienController.Type = EnemyType.Goei;
-
-
         alienController.Speed = alienSpeed;
         alienController.BulletSpeed = alienBulletSpeed;
+        alienController.ShootDelay = alienShootDelay;
         return goei;
     }
 
@@ -384,6 +386,7 @@ public class SpawnerController : MonoBehaviour
         alienController.Type = EnemyType.Stringer;
         alienController.Speed = alienSpeed;
         alienController.BulletSpeed = alienBulletSpeed;
+        alienController.ShootDelay = alienShootDelay;
         return stringer;
     }
 
@@ -401,6 +404,7 @@ public class SpawnerController : MonoBehaviour
         alienController.Type = EnemyType.BossGalaga;
         alienController.Speed = alienSpeed;
         alienController.BulletSpeed = alienBulletSpeed;
+        alienController.ShootDelay = alienShootDelay;
         return bossGalaga;
     }
 

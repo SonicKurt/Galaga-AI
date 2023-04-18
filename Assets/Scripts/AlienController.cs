@@ -59,7 +59,11 @@ public class AlienController : MonoBehaviour
 
     private AudioSource dieSoundEffect;
 
-    public float HorizontalInput { get; set; } 
+    private float startTime;
+
+    public float HorizontalInput { get; set; }
+
+    public float ShootDelay { get; set; }
 
     public EnemyType Type
     {
@@ -162,6 +166,7 @@ public class AlienController : MonoBehaviour
         randomizer = new Random();
         timesShot = 0;
         dieSoundEffect = GetComponent<AudioSource>();
+        startTime = Time.time;
     }
 
     // Update is called once per frame
@@ -195,15 +200,17 @@ public class AlienController : MonoBehaviour
                 
             } else {
                 Vector3 pos = transform.position;
-                
+
                 pos -= new Vector3(Mathf.Clamp(HorizontalInput, -12f, 12f), 0, 1) * speed * Time.deltaTime;
 
                 transform.position = pos;
 
-                int timeToShoot = randomizer.Next(0, 2);
-                if (timeToShoot == 1 && timesShot == 0) {
-                    StartCoroutine(Shoot());
-                    timesShot++;
+                if (!GameManager.Instance.training) {
+                    int timeToShoot = randomizer.Next(0, 2);
+                    if (timeToShoot == 1 && timesShot == 0) {
+                        StartCoroutine(Shoot());
+                        timesShot++;
+                    }
                 }
             }
         }
@@ -217,6 +224,20 @@ public class AlienController : MonoBehaviour
                 readyToLaunch = false;
                 resetToPosition = false;
             }
+        }
+    }
+
+    /// <summary>
+    /// Shoots an alien bullet if we are training the alien AIs.
+    /// </summary>
+    public void ShootBullet() {
+        if (Time.time > startTime && timesShot < 3) {
+            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            BulletController bulletController = bullet.GetComponent<BulletController>();
+            bulletController.Shooter = this.gameObject;
+            bulletController.Type = BulletType.Alien;
+            startTime = Time.time + ShootDelay;
+            timesShot++;
         }
     }
 

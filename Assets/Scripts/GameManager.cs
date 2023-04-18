@@ -19,7 +19,6 @@ using UnityEngine.SocialPlatforms;
 using Random = System.Random;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
-using UnityEditor.SceneManagement;
 using UnityEditor;
 
 public class GameManager : MonoBehaviour
@@ -87,7 +86,7 @@ public class GameManager : MonoBehaviour
             playerCount = 1;
             currentPlayer = 1;
             PlayerDead = false;
-            UpdateGameState(GameState.DisplayStageText);
+            //UpdateGameState(GameState.DisplayStageText);
         } else {
             UpdateGameState(GameState.PlayerSelect);
         }
@@ -343,7 +342,7 @@ public class GameManager : MonoBehaviour
             }
             
             MenuManager.Instance.UpdateCurrentStageTextField();
-            if (!playerSpawned) {
+            if (!playerSpawned && !GameManager.Instance.training) {
                 SpawnPlayer();
             }
         }
@@ -422,11 +421,7 @@ public class GameManager : MonoBehaviour
                     ClearAliens();
                     UpdateLivesTextField();
 
-                    if (training) {
-                        UpdateGameState(GameState.LoadEnemies);
-                    } else {
-                        UpdateGameState(GameState.DisplayStageText);
-                    }
+                    UpdateGameState(GameState.DisplayStageText);
 
                     yield break;
                 }

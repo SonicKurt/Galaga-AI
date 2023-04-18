@@ -399,6 +399,7 @@ MonoBehaviour:
   alienSpeed: 4
   alienBulletSpeed: 7
   alienSpeedIncrements: 0.5
+  alienShootDelay: 0.5
   stringerObject: {fileID: 9065693800613267984, guid: d045c6488cbab1344a9d086e387d5e25, type: 3}
   goeiObject: {fileID: 5224930022808408693, guid: 8105e4010121d4949ab102b9bde2583b, type: 3}
   bossGalagaObject: {fileID: 7116612630020728255, guid: f5460ee15ded1bf48a2c08022f23ad5b, type: 3}
@@ -456,6 +457,10 @@ PrefabInstance:
     - target: {fileID: 3616507406151715430, guid: 10f333f29ecdcb443925c64b1b97110a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3871639025702104463, guid: 10f333f29ecdcb443925c64b1b97110a, type: 3}
+      propertyPath: shootDelay
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 4142109889856950492, guid: 10f333f29ecdcb443925c64b1b97110a, type: 3}
       propertyPath: m_Name
@@ -635,8 +640,8 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
-      BranchSizes: 01000000
-    VectorActionSize: 01000000
+      BranchSizes: 0300000002000000
+    VectorActionSize: 0300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1

@@ -129,11 +129,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93d4e25dfd76f2f49af3dfc73213e7f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementValue: 0
   movementSpeed: 5
   maxProjectiles: 0
   projectileToSpawn: {fileID: 7531242057417417011, guid: 37686e1231ae842399b5ecba06f2ce4e, type: 3}
-  shootDelay: 0.25
+  shootDelay: 0.33
 --- !u!114 &-6068174607214903044
 MonoBehaviour:
   m_ObjectHideFlags: 0
