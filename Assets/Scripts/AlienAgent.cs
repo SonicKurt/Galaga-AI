@@ -1,3 +1,16 @@
+/**********************************************************
+ * Alien Agent
+ * 
+ * Summary: The learning agent for an alien.
+ * 
+ * Author: Kurt Campbell
+ * Date: 14 April 2023
+ * 
+ * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
+ * Donald Osborn.
+ * All rights reserved.
+ *********************************************************/
+
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -11,10 +24,12 @@ public class AlienAgent : Agent
 
     public override void Initialize()
     {
-        alienController = GetComponent<AlienController>();
+        GameObject parent = transform.parent.gameObject;
+        alienController = parent.GetComponent<AlienController>();
         behaviorParameters = GetComponent<BehaviorParameters>();
     }
 
+    // Testing purposes for random input to move the aliens horizontally.
     public override void Heuristic(in ActionBuffers actionsOut) {
         Random random = new Random();
         int horizontalInput = random.Next(-12, 13);
@@ -31,8 +46,7 @@ public class AlienAgent : Agent
         if (attack) {
             float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
             bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
-            Debug.Log("Horizontal: " + horizontalInput);
-
+            
             alienController.HorizontalInput = horizontalInput;
 
             if (shoot) {

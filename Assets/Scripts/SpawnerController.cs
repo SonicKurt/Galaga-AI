@@ -103,9 +103,16 @@ public class SpawnerController : MonoBehaviour
         StartCoroutine(loadAliens());
     }
 
+    /// <summary>
+    /// Increases the alien speed.
+    /// </summary>
+    /// <param name="newAlienSpeed">The amount of speed you want to increase.</param>
     public void increaseAlienSpeed(float newAlienSpeed) {
-        alienSpeed += newAlienSpeed;
-        timeDecrement += 0.1f;
+        Debug.Log("Alien Speed: " + (newAlienSpeed + alienSpeed));
+        if (alienSpeed + newAlienSpeed >= 6) {
+            alienSpeed += newAlienSpeed;
+            timeDecrement += newAlienSpeed;
+        }
     }
 
     private IEnumerator loadAliens()

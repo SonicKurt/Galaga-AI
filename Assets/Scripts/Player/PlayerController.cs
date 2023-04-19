@@ -1,3 +1,16 @@
+/**********************************************************
+ * Player Controller
+ * 
+ * Summary: Controls the behavior of the player.
+ * 
+ * Authors: Jackson Isenhower, Kurt Campbell
+ * Created: 21 March 2023
+ * 
+ * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
+ * Donald Osborn.
+ * All rights reserved.
+ *********************************************************/
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -16,6 +29,7 @@ public class PlayerController : MonoBehaviour {
     private float startTime;
     private bool reload;
 
+    // Indicate that the player is in training mode.
     public bool Training { get; set; }
 
     public float HorizontalInput { get; set; }
@@ -88,7 +102,7 @@ public class PlayerController : MonoBehaviour {
                 // add a reward to the alien agent.
                 if (GameManager.Instance.training) {
                     if (alien != null) {
-                        AlienAgent alienAgent = alien.GetComponent<AlienAgent>();
+                        AlienAgent alienAgent = alien.GetComponentInChildren<AlienAgent>();
                         alienAgent.AddReward(1f);
                     }
 
@@ -96,7 +110,7 @@ public class PlayerController : MonoBehaviour {
                     Destroy(other.gameObject);
                     GameManager.Instance.PlayerDead = true;
 
-                    PlayerAgent playerAgent = GetComponent<PlayerAgent>();
+                    PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
                     GameManager.Instance.StopAllCoroutines();
                     GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
                     playerAgent.EndEpisode();
@@ -120,11 +134,10 @@ public class PlayerController : MonoBehaviour {
 
             // The player agent needs to be present at all times.
             if (GameManager.Instance.training) {
-                PlayerAgent playerAgent = GetComponent<PlayerAgent>();
+                PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
                 GameManager.Instance.StopAllCoroutines();
                 GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
                 GameManager.Instance.removeAllBulletsFromScene();
-                //Destroy(this.gameObject);
                 playerAgent.EndEpisode();
             } else {
                 Destroy(this.gameObject);

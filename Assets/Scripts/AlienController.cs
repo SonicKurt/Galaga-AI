@@ -59,10 +59,17 @@ public class AlienController : MonoBehaviour
 
     private AudioSource dieSoundEffect;
 
+    // The attack start time counter.
     private float startTime;
 
+    // A counter for how many hits that the alien has been taken.
+    // NOTE: This is only used for Boss Galagas.
+    private float hitCounter;
+
+    // The value for the horizonal movement.
     public float HorizontalInput { get; set; }
 
+    // Alien shooting delay.
     public float ShootDelay { get; set; }
 
     public EnemyType Type
@@ -291,11 +298,24 @@ public class AlienController : MonoBehaviour
             BulletController bullet = other.GetComponent<BulletController>();
 
             if (bullet.Type != BulletType.Alien) {
-                GameManager.Instance.UpdateScore(type, attack);
-                DestoryAlien();
+                GameObject player = bullet.Shooter;
+
+                if (player != null && GameManager.Instance.training) {
+                    PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
+                    playerAgent.AddReward(1f);
+                }
+
+                // Boss Galagas take two hits to be destroyed.
+                // Other aliens (i.e., Goeis or Stringers) only take one hit.
+                if (Type == EnemyType.BossGalaga && hitCounter != 1) {
+                    hitCounter++;
+                } else {
+                    GameManager.Instance.UpdateScore(type, attack);
+                    DestoryAlien();
+                }
+
                 Destroy(other.gameObject);
             }
-            
         }
     }
 }

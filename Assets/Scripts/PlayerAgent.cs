@@ -1,3 +1,16 @@
+/**********************************************************
+ * Player Agent
+ * 
+ * Summary: The learning agent for the player.
+ * 
+ * Author: Kurt Campbell
+ * Created: 16 April 2023
+ * 
+ * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
+ * Donald Osborn.
+ * All rights reserved.
+ *********************************************************/
+
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
@@ -9,28 +22,23 @@ using Random = System.Random;
 
 public class PlayerAgent : Agent
 {
+    private GameObject parent;
     private PlayerController playerController;
     private BehaviorParameters behaviorParameters;
 
     public override void Initialize() {
-        playerController = GetComponent<PlayerController>();
+        parent = transform.parent.gameObject;
+        playerController = parent.GetComponent<PlayerController>();
         behaviorParameters = GetComponent<BehaviorParameters>();
     }
 
     public override void OnEpisodeBegin() {
-        // NOTE: This code snippet would be useful for the player, not the aliens.
-
+        parent.transform.position = new Vector3(-1.1f, 0f, -4f);
         GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
-        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
-
-        /*
-        if (behaviorParameters.BehaviorType == BehaviorType.Default) {
-           
-        }
-        */
+        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);    
     }
 
-    // Testing purposes for human input instead of neural network input.
+    // Testing purposes for random input instead of neural network input.
     public override void Heuristic(in ActionBuffers actionsOut) {
         Random random = new Random();
         int horizontalInput = random.Next(-12, 13);
@@ -45,13 +53,11 @@ public class PlayerAgent : Agent
         float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
         bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
 
-        
+        // Controls the player by the given actions.
         playerController.HorizontalInput = horizontalInput;
 
         if (shoot) {
             playerController.OnFire();
         }
-        
-        
     }
 }

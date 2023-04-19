@@ -86,7 +86,6 @@ public class GameManager : MonoBehaviour
             playerCount = 1;
             currentPlayer = 1;
             PlayerDead = false;
-            //UpdateGameState(GameState.DisplayStageText);
         } else {
             UpdateGameState(GameState.PlayerSelect);
         }
@@ -103,6 +102,8 @@ public class GameManager : MonoBehaviour
         switch (state) {
             case GameState.PlayerSelect:
                 // Start the game with player one being up first.
+
+                // Updates the high score text field.
                 MenuManager.Instance.UpdateHighScoreTextField(highScore);
 
                 enemyNumberRanges = new int[6 , 2];
@@ -165,7 +166,6 @@ public class GameManager : MonoBehaviour
                 
                 break;
             case GameState.EnemiesAttack:
-                
                 int alienCount = spawnerController.Aliens.Count;
 
                 currAliensAttacking = new List<GameObject>();
@@ -190,10 +190,18 @@ public class GameManager : MonoBehaviour
 
                 break;
             case GameState.GameOver:
-                // TODO: Set the Game Over panel active within the Canvas.
+                // Sets the high score if it has been beaten.
+                int bestScore = scores[0];
 
-                //PlayerPrefs.SetInt("High Score");
+                if (playerCount == 2) {
+                    if (bestScore < scores[1]) {
+                        bestScore = scores[1];
+                    }
+                }
 
+                PlayerPrefs.SetInt("High Score", bestScore);
+
+                // Destory this scene and restart to the main menu.
                 Destroy(MenuManager.Instance.canvas.gameObject);
                 Destroy(MenuManager.Instance.gameObject);
                 Destroy(this.gameObject);
@@ -207,7 +215,7 @@ public class GameManager : MonoBehaviour
                 PlayerDead = false;
 
                 Random randomizer = new Random();
-                float newAlienSpeed = randomizer.Next(-1, 1);
+                float newAlienSpeed = randomizer.Next(-1, 2);
                 spawnerController.increaseAlienSpeed(newAlienSpeed);
                 break;
             default:
@@ -408,10 +416,14 @@ public class GameManager : MonoBehaviour
         EnemyAttackState enemyAttackState = EnemyAttackState.Attack;
 
         if (aliens.Count == 0) {
+            CheckScore();
             enemyAttackState = EnemyAttackState.Done;
         }
 
         while (enemyAttackState != EnemyAttackState.Done) {
+            // Check to see if the player has gained an extra live. 
+            CheckScore();
+
             for (int i = 0; i < aliensAttacking; i++) {
                 alienIndex = randomizer.Next(0, aliens.Count);
 
@@ -481,6 +493,17 @@ public class GameManager : MonoBehaviour
             currentStage[currentPlayer - 1]++;
             UpdateGameState(GameState.DisplayStageText);
             yield break;
+        }
+    }
+
+    /// <summary>
+    /// Checks score to see if the current player has gained an extra life.
+    /// </summary>
+    private void CheckScore() {
+        if (scores[currentPlayer - 1] == 20000
+            || scores[currentPlayer - 1] % 60000 == 0) {
+            lives[currentPlayer - 1]++;
+            UpdateLivesTextField();
         }
     }
 
