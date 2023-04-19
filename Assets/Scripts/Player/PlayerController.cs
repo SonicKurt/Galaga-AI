@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour {
     public GameObject projectileToSpawn;
     public float shootDelay;
 
+    public GameObject doubleShip;
+    public bool isDouble = false;
+
     private AudioSource shootSoundEffect;
 
     private float startTime;
@@ -21,9 +24,20 @@ public class PlayerController : MonoBehaviour {
     void OnFire() {
         if (!reload) {
             shootSoundEffect.Play();
-            GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
-            BulletController bulletController = projectile.GetComponent<BulletController>();
-            bulletController.Type = BulletType.Player;
+			if (!isDouble) {
+				GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
+				BulletController bulletController = projectile.GetComponent<BulletController>();
+				bulletController.Type = BulletType.Player;
+			}
+            else {
+				GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
+				GameObject projectileTwo = Instantiate(projectileToSpawn, transform.position + new Vector3(-2.3f, 0, 1), Quaternion.Euler(0, 0, 0));
+				BulletController bulletController = projectile.GetComponent<BulletController>();
+				bulletController.Type = BulletType.Player;
+				BulletController bulletControllerTwo = projectileTwo.GetComponent<BulletController>();
+				bulletControllerTwo.Type = BulletType.Player;
+			}
+			
             reload = true;
             startTime = Time.time + shootDelay;
         }
