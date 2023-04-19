@@ -50,8 +50,12 @@ public class MenuManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         mainMenuPanel = GameObject.FindGameObjectWithTag("MainMenu");
-        stageCounterText.gameObject.SetActive(false);
-        liveCounterText.gameObject.SetActive(false);
+
+        // Turns off stage and live counter text fields when in playing mode.
+        if (!GameManager.Instance.training) {
+            stageCounterText.gameObject.SetActive(false);
+            liveCounterText.gameObject.SetActive(false);
+        }
     }
 
     // Update is called once per frame

@@ -299,8 +299,10 @@ MonoBehaviour:
   gridX: 5
   gridZ: 10
   gapSize: 2.2
-  alienSpeed: 4
+  alienSpeed: 7
   alienBulletSpeed: 7
+  alienSpeedIncrements: 0
+  alienShootDelay: 0
   stringerObject: {fileID: 9065693800613267984, guid: d045c6488cbab1344a9d086e387d5e25, type: 3}
   goeiObject: {fileID: 5224930022808408693, guid: 8105e4010121d4949ab102b9bde2583b, type: 3}
   bossGalagaObject: {fileID: 7116612630020728255, guid: f5460ee15ded1bf48a2c08022f23ad5b, type: 3}
@@ -1154,7 +1156,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 943c0e3824ce14bb18143291965aa9fc, type: 2}
+  - {fileID: 2100000, guid: 0f7cc8e988d08a3448104a38a81b2741, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1193,8 +1195,8 @@ Transform:
   m_GameObject: {fileID: 1584216103}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.7, y: 0, z: 5.2048}
-  m_LocalScale: {x: 20.105093, y: 20.105093, z: 20.105093}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 6, y: 6, z: 6}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3

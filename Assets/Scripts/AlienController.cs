@@ -14,6 +14,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = System.Random;
 
 public class AlienController : MonoBehaviour
@@ -57,6 +58,20 @@ public class AlienController : MonoBehaviour
     private List<GameObject> bullets;
 
     private AudioSource dieSoundEffect;
+
+    // The attack start time counter.
+    private float startTime;
+
+    // A counter for how many hits that the alien has been taken.
+    // NOTE: This is only used for Boss Galagas.
+    private float hitCounter;
+
+    // The value for the horizonal movement.
+    public float HorizontalInput { get; set; }
+
+    // Alien shooting delay.
+    public float ShootDelay { get; set; }
+
     public EnemyType Type
     {
         get
@@ -158,6 +173,8 @@ public class AlienController : MonoBehaviour
         randomizer = new Random();
         timesShot = 0;
         dieSoundEffect = GetComponent<AudioSource>();
+        startTime = Time.time;
+        bullets = new List<GameObject>();
     }
 
     // Update is called once per frame
@@ -186,16 +203,23 @@ public class AlienController : MonoBehaviour
 
                 attack = !resetToPosition;
 
-                ClearBullets();
+                //ClearBullets();
                 timesShot = 0;
+                
             } else {
-                //transform.position -= Vector3.up * speed * Time.deltaTime;
-                transform.position -= Vector3.forward * speed * Time.deltaTime;
+                Vector3 pos = transform.position;
 
-                int timeToShoot = randomizer.Next(0, 2);
-                if (timeToShoot == 1 && timesShot == 0) {
-                    StartCoroutine(Shoot());
-                    timesShot++;
+                pos -= new Vector3(Mathf.Clamp(HorizontalInput, -12f, 12f), 0, 1) * speed * Time.deltaTime;
+                pos.x = Mathf.Clamp(pos.x, -12f, 12f);
+
+                transform.position = pos;
+
+                if (!GameManager.Instance.training) {
+                    int timeToShoot = randomizer.Next(0, 2);
+                    if (timeToShoot == 1 && timesShot == 0) {
+                        StartCoroutine(Shoot());
+                        timesShot++;
+                    }
                 }
             }
         }
@@ -213,6 +237,21 @@ public class AlienController : MonoBehaviour
     }
 
     /// <summary>
+    /// Shoots an alien bullet if we are training the alien AIs.
+    /// </summary>
+    public void ShootBullet() {
+        if (Time.time > startTime && timesShot < 3) {
+            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            BulletController bulletController = bullet.GetComponent<BulletController>();
+            bulletController.Shooter = this.gameObject;
+            bulletController.Type = BulletType.Alien;
+            startTime = Time.time + ShootDelay;
+            bullets.Add(bullet);
+            timesShot++;
+        }
+    }
+
+    /// <summary>
     /// Instantiate new bullet objects for the alien.
     /// </summary>
     /// <returns>A time to timeout to instantiate the next bullet</returns>
@@ -223,6 +262,7 @@ public class AlienController : MonoBehaviour
         for (int i = 0; i < amountOfBullets; i++) {
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             BulletController bulletController = bullet.GetComponent<BulletController>();
+            bulletController.Shooter = this.gameObject;
             bulletController.Type = BulletType.Alien;
             yield return new WaitForSeconds(0.5f);
         }
@@ -258,11 +298,24 @@ public class AlienController : MonoBehaviour
             BulletController bullet = other.GetComponent<BulletController>();
 
             if (bullet.Type != BulletType.Alien) {
-                GameManager.Instance.UpdateScore(type, attack);
-                DestoryAlien();
+                GameObject player = bullet.Shooter;
+
+                if (player != null && GameManager.Instance.training) {
+                    PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
+                    playerAgent.AddReward(1f);
+                }
+
+                // Boss Galagas take two hits to be destroyed.
+                // Other aliens (i.e., Goeis or Stringers) only take one hit.
+                if (Type == EnemyType.BossGalaga && hitCounter != 1) {
+                    hitCounter++;
+                } else {
+                    GameManager.Instance.UpdateScore(type, attack);
+                    DestoryAlien();
+                }
+
                 Destroy(other.gameObject);
             }
-            
         }
     }
 }

@@ -1,3 +1,16 @@
+/**********************************************************
+ * Player Controller
+ * 
+ * Summary: Controls the behavior of the player.
+ * 
+ * Authors: Jackson Isenhower, Kurt Campbell
+ * Created: 21 March 2023
+ * 
+ * Copyright Cedarville University, Kurt Campbell, Jackson Isenhower,
+ * Donald Osborn.
+ * All rights reserved.
+ *********************************************************/
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -6,7 +19,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
-    public float movementValue;
     public float movementSpeed;
     public float maxProjectiles;
     public GameObject projectileToSpawn;
@@ -17,8 +29,12 @@ public class PlayerController : MonoBehaviour {
     private float startTime;
     private bool reload;
 
+    // Indicate that the player is in training mode.
+    public bool Training { get; set; }
 
-    void OnFire() {
+    public float HorizontalInput { get; set; }
+
+    public void OnFire() {
         if (!reload) {
             shootSoundEffect.Play();
             GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
@@ -30,7 +46,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     void OnMovement(InputValue value) {
-        movementValue = value.Get<float>();
+        HorizontalInput = value.Get<float>();
     }
 
     void OnPause() {
@@ -50,8 +66,13 @@ public class PlayerController : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update(){
-        float horizontalMovement = movementValue * movementSpeed * Time.deltaTime;
+    void Update() {
+        
+        if (Training) {
+                
+        }
+
+        float horizontalMovement = HorizontalInput * movementSpeed * Time.deltaTime;
         Vector3 pos = transform.position;
 
         // Clamps the horizontal movement to the left and right boundaries from the origin.
@@ -72,12 +93,35 @@ public class PlayerController : MonoBehaviour {
     /// alien or one of its bullets.</param>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Bullet") {
+         if (other.tag == "Bullet") {
             BulletController bulletController = other.GetComponent<BulletController>();
             if (bulletController.Type == BulletType.Alien) {
-                Destroy(other.gameObject);
-                GameManager.Instance.PlayerDead = true;
-                Destroy(this.gameObject);
+                GameObject alien = bulletController.Shooter;
+
+                // If the alien's bullet attacked the player in training mode,
+                // add a reward to the alien agent.
+                if (GameManager.Instance.training) {
+                    if (alien != null) {
+                        AlienAgent alienAgent = alien.GetComponentInChildren<AlienAgent>();
+                        alienAgent.AddReward(1f);
+                    }
+
+                    GameManager.Instance.removeAllBulletsFromScene();
+                    Destroy(other.gameObject);
+                    GameManager.Instance.PlayerDead = true;
+
+                    PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
+                    GameManager.Instance.StopAllCoroutines();
+                    GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                    playerAgent.EndEpisode();
+                } else {
+                    Destroy(other.gameObject);
+                    GameManager.Instance.PlayerDead = true;
+                    Destroy(this.gameObject);
+                }
+                
+
+                return;
             }   
         }
 
@@ -87,7 +131,19 @@ public class PlayerController : MonoBehaviour {
             AlienController alienController = other.gameObject.GetComponent<AlienController>();
             alienController.DestoryAlien();
             GameManager.Instance.PlayerDead = true;
-            Destroy(this.gameObject);
+
+            // The player agent needs to be present at all times.
+            if (GameManager.Instance.training) {
+                PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
+                GameManager.Instance.StopAllCoroutines();
+                GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                GameManager.Instance.removeAllBulletsFromScene();
+                playerAgent.EndEpisode();
+            } else {
+                Destroy(this.gameObject);
+            }
+
+            return;
         }
     }
 }
