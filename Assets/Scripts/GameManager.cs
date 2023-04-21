@@ -301,6 +301,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int getAlienCount() {
+        return spawnerController.Aliens.Count;
+    }
+
     public bool checkGridEmpty() {
         GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
         return spawner.transform.childCount == 0;
@@ -494,6 +498,7 @@ public class GameManager : MonoBehaviour
         if (training) {
             UpdateGameState(GameState.ResetEpisode);
             PlayerAgent playerAgent = player.GetComponent<PlayerAgent>();
+            playerAgent.AddReward(1f);
             playerAgent.EndEpisode();
         }
 
@@ -518,7 +523,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Clears the entire alien grid from the grid object.
     /// </summary>
-    private void ClearAliens() {
+    public void ClearAliens() {
         spawnerController.ClearGrid();
     }
 
