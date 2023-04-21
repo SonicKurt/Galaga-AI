@@ -24,6 +24,7 @@ public class AlienAgent : Agent
 
     public override void Initialize()
     {
+
         GameObject parent = transform.parent.gameObject;
         alienController = parent.GetComponent<AlienController>();
         behaviorParameters = GetComponent<BehaviorParameters>();
@@ -35,8 +36,9 @@ public class AlienAgent : Agent
         int horizontalInput = random.Next(-12, 13);
         int shoot = random.Next(0, 2);
 
+        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         ActionSegment<int> actions = actionsOut.DiscreteActions;
-        actions[0] = horizontalInput;
+        continuousActions[0] = horizontalInput;
         actions[1] = shoot;
     }
     
@@ -44,7 +46,7 @@ public class AlienAgent : Agent
         bool attack = alienController.Attack;
         
         if (attack) {
-            float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
+            float horizontalInput = actions.ContinuousActions[0];// <= 12 ? actions.DiscreteActions[0] : -12;
             bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
             
             alienController.HorizontalInput = horizontalInput;

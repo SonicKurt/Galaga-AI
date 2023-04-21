@@ -68,10 +68,6 @@ public class PlayerController : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         
-        if (Training) {
-                
-        }
-
         float horizontalMovement = HorizontalInput * movementSpeed * Time.deltaTime;
         Vector3 pos = transform.position;
 
@@ -113,6 +109,7 @@ public class PlayerController : MonoBehaviour {
                     PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
                     GameManager.Instance.StopAllCoroutines();
                     GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                    playerAgent.AddReward(-1f);
                     playerAgent.EndEpisode();
                 } else {
                     Destroy(other.gameObject);
@@ -129,6 +126,11 @@ public class PlayerController : MonoBehaviour {
             || other.tag == "Stringer"
             || other.tag == "BossGalaga") {
             AlienController alienController = other.gameObject.GetComponent<AlienController>();
+
+            // Gets reward if the alien crashes into player.
+            AlienAgent alienAgent = other.gameObject.GetComponentInChildren<AlienAgent>();
+            alienAgent.AddReward(1f);
+
             alienController.DestoryAlien();
             GameManager.Instance.PlayerDead = true;
 
@@ -138,6 +140,7 @@ public class PlayerController : MonoBehaviour {
                 GameManager.Instance.StopAllCoroutines();
                 GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
                 GameManager.Instance.removeAllBulletsFromScene();
+                playerAgent.AddReward(-1f);
                 playerAgent.EndEpisode();
             } else {
                 Destroy(this.gameObject);
