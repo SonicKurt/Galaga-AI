@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour {
     private float startTime;
     private bool reload;
 
+    private PlayerAgent agent;
+
     // Indicate that the player is in training mode.
     public bool Training { get; set; }
 
@@ -63,6 +65,7 @@ public class PlayerController : MonoBehaviour {
         shootSoundEffect = GetComponent<AudioSource>();
         startTime = Time.time + shootDelay;
         reload = true;
+        agent = GetComponentInChildren<PlayerAgent>();
     }
 
     // Update is called once per frame
@@ -79,6 +82,7 @@ public class PlayerController : MonoBehaviour {
             reload = false;
         }
 
+        agent.AddReward(-1f / agent.MaxStep);
     }
 
     /// <summary>
@@ -140,7 +144,7 @@ public class PlayerController : MonoBehaviour {
                 GameManager.Instance.StopAllCoroutines();
                 GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
                 GameManager.Instance.removeAllBulletsFromScene();
-                playerAgent.AddReward(-1f);
+                playerAgent.AddReward(-1f / agent.MaxStep);
                 playerAgent.EndEpisode();
             } else {
                 Destroy(this.gameObject);

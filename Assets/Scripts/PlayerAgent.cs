@@ -34,11 +34,11 @@ public class PlayerAgent : Agent
 
     public override void OnEpisodeBegin() {
         parent.transform.position = new Vector3(-1.1f, 0f, -4f);
+        
         if (GameManager.Instance.checkGridEmpty() || GameManager.Instance.PlayerDead) {
             GameManager.Instance.PlayerDead = false;
             GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
             GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
-            
         }
     }
 

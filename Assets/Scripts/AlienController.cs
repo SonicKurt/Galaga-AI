@@ -303,7 +303,7 @@ public class AlienController : MonoBehaviour
 
                 if (player != null && GameManager.Instance.training) {
                     PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
-                    playerAgent.AddReward(1f);
+                    playerAgent.AddReward(1f / GameManager.Instance.getAlienCount());
                 }
 
                 // Boss Galagas take two hits to be destroyed.
