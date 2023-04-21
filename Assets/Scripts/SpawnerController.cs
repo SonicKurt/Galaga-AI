@@ -109,8 +109,16 @@ public class SpawnerController : MonoBehaviour
     /// <param name="newAlienSpeed">The amount of speed you want to increase.</param>
     public void increaseAlienSpeed(float newAlienSpeed) {
         Debug.Log("Alien Speed: " + (newAlienSpeed + alienSpeed));
-        if (alienSpeed + newAlienSpeed >= 6) {
+        if (alienSpeed + newAlienSpeed >= 6 && alienSpeed + newAlienSpeed <= 9) {
             alienSpeed += newAlienSpeed;
+            if (newAlienSpeed == -1) {
+                alienBulletSpeed += newAlienSpeed - 1;
+            }
+
+            if (newAlienSpeed == 1) {
+                alienBulletSpeed += newAlienSpeed + 1;
+            }
+            
             timeDecrement += newAlienSpeed;
         }
     }
@@ -361,7 +369,9 @@ public class SpawnerController : MonoBehaviour
 
                 if (alienController.Type == enemyType && alienController.LaunchPad == launchPad) {
                     alienController.ReadyToLaunch = true;
+                    
                     yield return new WaitForSeconds(1.5f);
+                    
                 }
             }  
         }

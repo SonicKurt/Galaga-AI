@@ -212,11 +212,13 @@ public class GameManager : MonoBehaviour
             case GameState.ResetEpisode:
                 lives[currentPlayer - 1] = initialLives;
                 ClearAliens();
-                PlayerDead = false;
+                //PlayerDead = false;
 
+                /*
                 Random randomizer = new Random();
                 float newAlienSpeed = randomizer.Next(-1, 2);
                 spawnerController.increaseAlienSpeed(newAlienSpeed);
+                */
                 break;
             default:
                 break;
@@ -298,6 +300,12 @@ public class GameManager : MonoBehaviour
             Destroy(bullet);
         }
     }
+
+    public bool checkGridEmpty() {
+        GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
+        return spawner.transform.childCount == 0;
+    }
+
 
     /// <summary>
     /// Initialize the scores to start from zero.
@@ -518,9 +526,11 @@ public class GameManager : MonoBehaviour
         int numOfAliensAttacking = currAliensAttacking.Count;
 
         while (currAliensAttacking.Count != 0) {
-            AlienController alienController = currAliensAttacking[--numOfAliensAttacking].GetComponent<AlienController>();
-            alienController.ResetToPosition = true;
-            currAliensAttacking.RemoveAt(numOfAliensAttacking);
+            if (currAliensAttacking[numOfAliensAttacking - 1] != null) {
+                AlienController alienController = currAliensAttacking[--numOfAliensAttacking].GetComponent<AlienController>();
+                alienController.ResetToPosition = true;
+                currAliensAttacking.RemoveAt(numOfAliensAttacking);
+            }
         }
     }
 

@@ -184,6 +184,7 @@ public class AlienController : MonoBehaviour
         if (readyToLaunch)
         {
             float step = speed * Time.deltaTime;
+            
             transform.position = Vector3.MoveTowards(transform.position, spawnPos, step);
 
             if (Vector3.Distance(transform.position, spawnPos) < 0.001f)
