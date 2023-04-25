@@ -1193,6 +1193,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3274298603336164510, guid: 44b2ed932a9f44277b42b41299055b18, type: 3}
+      propertyPath: MaxStep
+      value: 4000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3274298603336164511, guid: 44b2ed932a9f44277b42b41299055b18, type: 3}
+      propertyPath: m_MaxRayDegrees
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3274298603336164511, guid: 44b2ed932a9f44277b42b41299055b18, type: 3}
+      propertyPath: m_RaysPerDirection
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3274298603336164705, guid: 44b2ed932a9f44277b42b41299055b18, type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 44b2ed932a9f44277b42b41299055b18, type: 3}

@@ -35,11 +35,15 @@ public class PlayerAgent : Agent
     public override void OnEpisodeBegin() {
         parent.transform.position = new Vector3(-1.1f, 0f, -4f);
         
-        if (GameManager.Instance.checkGridEmpty() || GameManager.Instance.PlayerDead) {
-            GameManager.Instance.PlayerDead = false;
-            GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
-            GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
+        if (!GameManager.Instance.checkGridEmpty() || GameManager.Instance.PlayerDead) {
+            GameManager.Instance.removeAllBulletsFromScene();
+            GameManager.Instance.StopAllCoroutines();
+            GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
         }
+
+        GameManager.Instance.PlayerDead = false;
+        GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
+        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
     }
 
     // Testing purposes for random input instead of neural network input.
@@ -58,6 +62,8 @@ public class PlayerAgent : Agent
     public override void OnActionReceived(ActionBuffers actions) {
         float horizontalInput = actions.ContinuousActions[0]; // <= 12 ? actions.DiscreteActions[0] : -12;
         bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
+
+        AddReward(-1f / MaxStep);
 
         Debug.Log("Player Shoot Input: " + shoot);
 

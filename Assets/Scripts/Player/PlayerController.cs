@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour {
             GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
             BulletController bulletController = projectile.GetComponent<BulletController>();
             bulletController.Type = BulletType.Player;
+            bulletController.Shooter = this.gameObject;
             reload = true;
             startTime = Time.time + shootDelay;
         }
@@ -81,8 +82,7 @@ public class PlayerController : MonoBehaviour {
         if (Time.time > startTime) {
             reload = false;
         }
-
-        agent.AddReward(-1f / agent.MaxStep);
+        
     }
 
     /// <summary>
@@ -106,14 +106,13 @@ public class PlayerController : MonoBehaviour {
                         alienAgent.AddReward(1f);
                     }
 
-                    GameManager.Instance.removeAllBulletsFromScene();
                     Destroy(other.gameObject);
                     GameManager.Instance.PlayerDead = true;
 
                     PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
-                    GameManager.Instance.StopAllCoroutines();
-                    GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
-                    playerAgent.AddReward(-1f);
+                    //GameManager.Instance.StopAllCoroutines();
+                    //GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                    playerAgent.AddReward(-0.5f);
                     playerAgent.EndEpisode();
                 } else {
                     Destroy(other.gameObject);
@@ -141,10 +140,10 @@ public class PlayerController : MonoBehaviour {
             // The player agent needs to be present at all times.
             if (GameManager.Instance.training) {
                 PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
-                GameManager.Instance.StopAllCoroutines();
-                GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                //GameManager.Instance.StopAllCoroutines();
+                //GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
                 GameManager.Instance.removeAllBulletsFromScene();
-                playerAgent.AddReward(-1f / agent.MaxStep);
+                playerAgent.AddReward(-0.5f);
                 playerAgent.EndEpisode();
             } else {
                 Destroy(this.gameObject);

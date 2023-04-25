@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour
 
     public bool training;
 
+    public bool Spawning { get; set; }
+
     public int PlayerCount {
         get {
             return playerCount;
@@ -86,6 +88,7 @@ public class GameManager : MonoBehaviour
             playerCount = 1;
             currentPlayer = 1;
             PlayerDead = false;
+            Spawning = false;
         } else {
             UpdateGameState(GameState.PlayerSelect);
         }
@@ -161,9 +164,11 @@ public class GameManager : MonoBehaviour
                 GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
                 spawnerController = spawner.GetComponent<SpawnerController>();
                 
-                // Loads the aliens into their proper positions.    
-                spawnerController.SpawnAliens();
-                
+                // Loads the aliens into their proper positions.
+                if (!Spawning) {
+                    spawnerController.SpawnAliens();
+                }
+
                 break;
             case GameState.EnemiesAttack:
                 int alienCount = spawnerController.Aliens.Count;
@@ -296,13 +301,16 @@ public class GameManager : MonoBehaviour
     public void removeAllBulletsFromScene() {
         GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
 
-        foreach (GameObject bullet in bullets) {
-            Destroy(bullet);
+        if (bullets != null) {
+            foreach (GameObject bullet in bullets) {
+                Destroy(bullet);
+            }
         }
     }
 
     public int getAlienCount() {
-        return spawnerController.Aliens.Count;
+        GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
+        return spawner.transform.childCount;
     }
 
     public bool checkGridEmpty() {
@@ -452,8 +460,6 @@ public class GameManager : MonoBehaviour
             
             if (PlayerDead) {
                 if (training) {
-                    PlayerDead = false;
-                    ClearAliens();
                     yield break;
                 }
 
@@ -461,7 +467,7 @@ public class GameManager : MonoBehaviour
 
                 // If there are two players playing, we want to switch
                 // to the current player.
-                if (playerCount == 2) {
+                if (playerCount == 2 && !training) {
                     UpdateGameState(GameState.SwitchPlayer);
                     yield break;
                 }
@@ -469,7 +475,7 @@ public class GameManager : MonoBehaviour
                 // If the current single player has lives, we
                 // must reset the alien positions, update the live counter text
                 // field, and update the game state to display the stage.
-                if (lives[currentPlayer - 1] > 0) {
+                if (lives[currentPlayer - 1] > 0 && !training) {
                     // Reset the aliens to go back to their grid position.
                     //ResetAliens(currAliensAttacking);
                     
@@ -496,10 +502,11 @@ public class GameManager : MonoBehaviour
         }
 
         if (training) {
-            UpdateGameState(GameState.ResetEpisode);
-            PlayerAgent playerAgent = player.GetComponent<PlayerAgent>();
+            //UpdateGameState(GameState.ResetEpisode);
+            PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
             playerAgent.AddReward(1f);
             playerAgent.EndEpisode();
+            yield break;
         }
 
         if (aliens.Count == 0) {
@@ -535,6 +542,10 @@ public class GameManager : MonoBehaviour
                 AlienController alienController = currAliensAttacking[--numOfAliensAttacking].GetComponent<AlienController>();
                 alienController.ResetToPosition = true;
                 currAliensAttacking.RemoveAt(numOfAliensAttacking);
+            }
+            // If training is enabled, break this loop. 
+            else if (training) {
+                break;
             }
         }
     }
