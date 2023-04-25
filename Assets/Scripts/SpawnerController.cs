@@ -78,6 +78,8 @@ public class SpawnerController : MonoBehaviour
 
     public void SpawnAliens()
     {
+        GameManager.Instance.Spawning = true;
+
         // The first position of the grid.
         float startingPosX = gapSize * -4;
         
@@ -350,6 +352,7 @@ public class SpawnerController : MonoBehaviour
             }
         }
 
+        GameManager.Instance.Spawning = false;
         GameManager.Instance.UpdateGameState(GameState.EnemiesAttack);
     }
 
