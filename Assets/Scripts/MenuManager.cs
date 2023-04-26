@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour {
     public static MenuManager Instance;
@@ -31,12 +32,16 @@ public class MenuManager : MonoBehaviour {
     public TextMeshProUGUI currentStageText;
     public TextMeshProUGUI stageCounterText;
     public TextMeshProUGUI liveCounterText;
+    public Toggle playerAgentToggle;
 
     // Player input actions for the main menu.
     private PlayerInput playerInput;
 
     // Main Menu Panel from the Main User Interface.
     private GameObject mainMenuPanel;
+
+    // Developer Menu Panel.
+    public GameObject developerPanel;
 
     private void Awake() {
         Instance = this;
@@ -79,6 +84,18 @@ public class MenuManager : MonoBehaviour {
 
     public void OnExit() {
         Application.Quit();
+    }
+
+    public void OnPlayerAgentToggle() {
+        GameManager.Instance.TogglePlayerAgent(playerAgentToggle.isOn);
+    }
+
+    public void OnDeveloperMenuToggle() {
+        if (developerPanel.activeSelf) {
+            developerPanel.SetActive(false);
+        } else {
+            developerPanel.SetActive(true);
+        }
     }
 
     /// <summary>
@@ -154,7 +171,7 @@ public class MenuManager : MonoBehaviour {
     /// </summary>
     /// <param name="lives">The amount of lives the player has.</param>
     public void UpdateLiveCounterText(int lives) {
-        liveCounterText.SetText(lives.ToString());
+        liveCounterText.SetText("Lives: " + lives.ToString());
     }
 
     /// <summary>
@@ -162,7 +179,7 @@ public class MenuManager : MonoBehaviour {
     /// </summary>
     /// <param name="stage">The current stage the player is on.</param>
     public void UpdateStageCounterText(int stage) {
-        stageCounterText.SetText(stage.ToString());
+        stageCounterText.SetText("Stage " + stage.ToString());
     }
 
     /// <summary>

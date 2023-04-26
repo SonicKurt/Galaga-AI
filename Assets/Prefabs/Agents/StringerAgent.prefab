@@ -140,7 +140,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 0ff246e978ed07047b96f68f21f4b195, type: 3}
+  m_audioClip: {fileID: 8300000, guid: b7bfa9556dbba47908a9e45d47933bfc, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -283,7 +283,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: d1b813b10d5604a899e9373d1ad90fa2, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 1
   m_BehaviorName: Alien

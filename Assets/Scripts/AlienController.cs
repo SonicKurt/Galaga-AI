@@ -214,7 +214,7 @@ public class AlienController : MonoBehaviour
                 pos.x = Mathf.Clamp(pos.x, -12f, 12f);
 
                 transform.position = pos;
-
+                
                 if (!GameManager.Instance.training) {
                     int timeToShoot = randomizer.Next(0, 2);
                     if (timeToShoot == 1 && timesShot == 0) {
@@ -288,8 +288,7 @@ public class AlienController : MonoBehaviour
         }
 
         GameManager.Instance.RemoveAlien(this.gameObject);
-        
-        dieSoundEffect.Play();
+
         Destroy(this.gameObject);
     }
 
@@ -315,6 +314,8 @@ public class AlienController : MonoBehaviour
                     DestoryAlien();
                 }
 
+                //dieSoundEffect.Play();
+                GameManager.Instance.PlayAlienDeathSound();
                 Destroy(other.gameObject);
             }
         }
