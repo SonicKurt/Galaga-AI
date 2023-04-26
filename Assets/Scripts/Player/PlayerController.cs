@@ -117,6 +117,7 @@ public class PlayerController : MonoBehaviour {
                 } else {
                     Destroy(other.gameObject);
                     GameManager.Instance.PlayerDead = true;
+                    GameManager.Instance.LoseLife();
                     Destroy(this.gameObject);
                 }
                 
@@ -146,6 +147,7 @@ public class PlayerController : MonoBehaviour {
                 playerAgent.AddReward(-0.5f);
                 playerAgent.EndEpisode();
             } else {
+                GameManager.Instance.LoseLife();
                 Destroy(this.gameObject);
             }
 

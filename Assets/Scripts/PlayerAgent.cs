@@ -33,17 +33,19 @@ public class PlayerAgent : Agent
     }
 
     public override void OnEpisodeBegin() {
-        parent.transform.position = new Vector3(-1.1f, 0f, -4f);
-        
-        if (!GameManager.Instance.checkGridEmpty() || GameManager.Instance.PlayerDead) {
-            GameManager.Instance.removeAllBulletsFromScene();
-            GameManager.Instance.StopAllCoroutines();
-            GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
-        }
+        if (GameManager.Instance.training) {
+            parent.transform.position = new Vector3(-1.1f, 0f, -4f);
+            if (!GameManager.Instance.checkGridEmpty() || GameManager.Instance.PlayerDead) {
+                GameManager.Instance.removeAllBulletsFromScene();
+                GameManager.Instance.StopAllCoroutines();
+                GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+            }
 
-        GameManager.Instance.PlayerDead = false;
-        GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
-        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
+            GameManager.Instance.PlayerDead = false;
+            GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
+            GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
+        }
+        
     }
 
     // Testing purposes for random input instead of neural network input.

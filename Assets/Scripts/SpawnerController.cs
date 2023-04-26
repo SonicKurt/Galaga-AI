@@ -16,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 public class SpawnerController : MonoBehaviour
 {
@@ -125,17 +126,24 @@ public class SpawnerController : MonoBehaviour
         }
     }
 
+    private void IncreaseAlienSpeed() {
+        alienSpeed += alienSpeedIncrements;
+        alienBulletSpeed += 1f;
+        timeDecrement += 0.25f;
+    }
+
     private IEnumerator loadAliens()
     {
         // Start in the first phase of loading.
         LoadEnemyState enemyState = LoadEnemyState.Phase1;
 
         int stage = GameManager.Instance.getCurrentStage();
+        bool attackOnLoad = false;
 
         // For every three stages, increase the alien's speed.
         if (stage % 3 == 0) {
-            alienSpeed += alienSpeedIncrements;
-            timeDecrement += 0.1f;
+            IncreaseAlienSpeed();
+            attackOnLoad = true;
         }
 
         while (enemyState != LoadEnemyState.Done)
@@ -177,8 +185,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0));
-                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Stringer, 1));
+                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0, attackOnLoad));
+                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Stringer, 1, attackOnLoad));
 
                     yield return new WaitForSeconds(7f - timeDecrement);
                     enemyState = LoadEnemyState.Phase2;
@@ -221,8 +229,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0));
-                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.BossGalaga, 1));
+                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0, attackOnLoad));
+                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.BossGalaga, 1, attackOnLoad));
 
                     yield return new WaitForSeconds(7f - timeDecrement);
                     enemyState = LoadEnemyState.Phase3;
@@ -261,8 +269,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0));
-                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 1));
+                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0, attackOnLoad));
+                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 1, attackOnLoad));
 
                     yield return new WaitForSeconds(8f - timeDecrement);
 
@@ -301,8 +309,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0));
-                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 1));
+                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0, attackOnLoad));
+                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 1, attackOnLoad));
 
                     yield return new WaitForSeconds(8f - timeDecrement);
 
@@ -342,8 +350,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0));
-                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1));
+                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0, attackOnLoad));
+                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1, attackOnLoad));
 
                     yield return new WaitForSeconds(9f - timeDecrement);
 
@@ -363,8 +371,14 @@ public class SpawnerController : MonoBehaviour
     /// <param name="enemyType">The enemy type of the aliens to launch.</param>
     /// <param name="launchPad">The launch pad number to launch from.</param>
     /// <returns>The amount of time to sleep before launching the next alien.</returns>
-    IEnumerator launchAliens(List<GameObject> alienLoadDeck, EnemyType enemyType, int launchPad)
+    IEnumerator launchAliens(List<GameObject> alienLoadDeck, EnemyType enemyType, int launchPad, bool attackOnLoad)
     {
+        Random randomizer = new Random();
+
+        
+        int alienAttack = randomizer.Next(0, alienLoadDeck.Count);
+
+        int i = 0;
         foreach (GameObject alien in alienLoadDeck)
         {
             if (alien != null) {
@@ -372,11 +386,18 @@ public class SpawnerController : MonoBehaviour
 
                 if (alienController.Type == enemyType && alienController.LaunchPad == launchPad) {
                     alienController.ReadyToLaunch = true;
-                    
+
                     yield return new WaitForSeconds(1.5f);
-                    
+
+                    if (attackOnLoad && alienController != null) {
+                        if (alienAttack == i) {
+                            alienController.ShootBullet();
+                        }
+                    }                   
                 }
-            }  
+            }
+
+            i++;
         }
     }
 

@@ -31,6 +31,9 @@ public class GameManager : MonoBehaviour
     // Player instance.
     public GameObject player;
 
+    // Player Agent instance.
+    public GameObject playerAgent;
+
     // Initial lives for the player to beign with.
     public int initialLives;
 
@@ -75,6 +78,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private AudioSource alienDeathSoundEffect;
+
     private void Awake()
     {
         Instance = this;
@@ -84,6 +89,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        alienDeathSoundEffect = GetComponent<AudioSource>();
+
         if (training) {
             playerCount = 1;
             currentPlayer = 1;
@@ -204,7 +211,9 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                PlayerPrefs.SetInt("High Score", bestScore);
+                if (bestScore > highScore) {
+                    PlayerPrefs.SetInt("High Score", bestScore);
+                }
 
                 // Destory this scene and restart to the main menu.
                 Destroy(MenuManager.Instance.canvas.gameObject);
@@ -217,7 +226,7 @@ public class GameManager : MonoBehaviour
             case GameState.ResetEpisode:
                 lives[currentPlayer - 1] = initialLives;
                 ClearAliens();
-                //PlayerDead = false;
+
 
                 /*
                 Random randomizer = new Random();
@@ -228,6 +237,23 @@ public class GameManager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void TogglePlayerAgent(bool toggle) {
+        if (toggle) {
+            playerAgent.SetActive(true);
+            player.SetActive(false);
+        } else {
+            playerAgent.SetActive(false);
+            player.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Plays the alien death sound if an alien died.
+    /// </summary>
+    public void PlayAlienDeathSound() {
+        alienDeathSoundEffect.Play();
     }
 
     /// <summary>
@@ -318,6 +344,10 @@ public class GameManager : MonoBehaviour
         return spawner.transform.childCount == 0;
     }
 
+    public void LoseLife() {
+        lives[currentPlayer - 1]--;
+        UpdateLivesTextField();
+    }
 
     /// <summary>
     /// Initialize the scores to start from zero.
@@ -370,11 +400,16 @@ public class GameManager : MonoBehaviour
     private IEnumerator DisplayStage() {
         yield return new WaitForSeconds(1f);
 
+        GameObject firstStageObj = GameObject.FindGameObjectWithTag("FirstStage");
+        AudioSource firstStageAudio = firstStageObj.GetComponent<AudioSource>();
+
         bool playerSpawned = false;
 
         if (currentStage[currentPlayer - 1] > 1) {
             MenuManager.Instance.UpdateCurrentStageTextField(currentStage[currentPlayer - 1]);
         } else if (currentStage[currentPlayer - 1] == 1 && lives[currentPlayer - 1] == initialLives) {
+            firstStageAudio.Play();
+
             MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
             MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
             yield return new WaitForSeconds(3f);
@@ -385,6 +420,8 @@ public class GameManager : MonoBehaviour
             }
             
             playerSpawned = true;
+
+            
         } 
         
         if (PlayerDead) {
@@ -405,6 +442,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(3f);
 
+        firstStageAudio.Stop();
         MenuManager.Instance.currentStageText.gameObject.SetActive(false);
         MenuManager.Instance.currentPlayerText.gameObject.SetActive(false);
         UpdateGameState(GameState.LoadEnemies);
@@ -415,7 +453,12 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void SpawnPlayer() {
         Vector3 spawnPos = new Vector3(-1.1f, 0f, -4f);
-        Instantiate(player, spawnPos, Quaternion.Euler(-90, 90, 0));
+
+        if (!player.activeSelf) {
+            Instantiate(playerAgent, spawnPos, Quaternion.Euler(-90, 90, 0));
+        } else {
+            Instantiate(player, spawnPos, Quaternion.Euler(-90, 90, 0));
+        }
     }
 
     /// <summary>
@@ -463,8 +506,6 @@ public class GameManager : MonoBehaviour
                     yield break;
                 }
 
-                lives[currentPlayer - 1]--;
-
                 // If there are two players playing, we want to switch
                 // to the current player.
                 if (playerCount == 2 && !training) {
@@ -480,8 +521,6 @@ public class GameManager : MonoBehaviour
                     //ResetAliens(currAliensAttacking);
                     
                     ClearAliens();
-                    UpdateLivesTextField();
-
                     UpdateGameState(GameState.DisplayStageText);
 
                     yield break;
