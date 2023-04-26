@@ -204,9 +204,7 @@ public class AlienController : MonoBehaviour
 
                 attack = !resetToPosition;
 
-                //ClearBullets();
                 timesShot = 0;
-                
             } else {
                 Vector3 pos = transform.position;
 
@@ -215,13 +213,13 @@ public class AlienController : MonoBehaviour
 
                 transform.position = pos;
                 
-                if (!GameManager.Instance.training) {
-                    int timeToShoot = randomizer.Next(0, 2);
-                    if (timeToShoot == 1 && timesShot == 0) {
-                        StartCoroutine(Shoot());
-                        timesShot++;
-                    }
-                }
+                //if (!GameManager.Instance.training) {
+                //    int timeToShoot = randomizer.Next(0, 2);
+                //    if (timeToShoot == 1 && timesShot == 0) {
+                //        StartCoroutine(Shoot());
+                //        timesShot++;
+                //    }
+                //}
             }
         }
 
@@ -256,18 +254,18 @@ public class AlienController : MonoBehaviour
     /// Instantiate new bullet objects for the alien.
     /// </summary>
     /// <returns>A time to timeout to instantiate the next bullet</returns>
-    private IEnumerator Shoot() {
-        yield return new WaitForSeconds(0.7f);
-        int amountOfBullets = randomizer.Next(1, 4);
+    //private IEnumerator Shoot() {
+    //    yield return new WaitForSeconds(0.7f);
+    //    int amountOfBullets = randomizer.Next(1, 4);
 
-        for (int i = 0; i < amountOfBullets; i++) {
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            BulletController bulletController = bullet.GetComponent<BulletController>();
-            bulletController.Shooter = this.gameObject;
-            bulletController.Type = BulletType.Alien;
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
+    //    for (int i = 0; i < amountOfBullets; i++) {
+    //        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+    //        BulletController bulletController = bullet.GetComponent<BulletController>();
+    //        bulletController.Shooter = this.gameObject;
+    //        bulletController.Type = BulletType.Alien;
+    //        yield return new WaitForSeconds(0.5f);
+    //    }
+    //}
 
     /// <summary>
     /// Clears the bullets from the scene if the player had died.
@@ -314,8 +312,10 @@ public class AlienController : MonoBehaviour
                     DestoryAlien();
                 }
 
-                //dieSoundEffect.Play();
-                GameManager.Instance.PlayAlienDeathSound();
+                if (!GameManager.Instance.training) {
+                    GameManager.Instance.PlayAlienDeathSound();
+                }
+
                 Destroy(other.gameObject);
             }
         }
