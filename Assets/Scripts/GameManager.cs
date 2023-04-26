@@ -54,6 +54,8 @@ public class GameManager : MonoBehaviour
 
     private SpawnerController spawnerController;
 
+    private bool stageCompleted;
+
     private int[,] enemyNumberRanges;
 
     // The amount of aliens to attack one time.
@@ -84,12 +86,22 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         highScore = PlayerPrefs.GetInt("High Score", 30000);
+
+        if (training) {
+            player.SetActive(false);
+            playerAgent.SetActive(true);
+        } else {
+            player.SetActive(true);
+            playerAgent.SetActive(false);
+        }
+
         DontDestroyOnLoad(this);
     }
 
     private void Start()
     {
         alienDeathSoundEffect = GetComponent<AudioSource>();
+        stageCompleted = false;
 
         if (training) {
             playerCount = 1;
@@ -115,26 +127,6 @@ public class GameManager : MonoBehaviour
 
                 // Updates the high score text field.
                 MenuManager.Instance.UpdateHighScoreTextField(highScore);
-
-                enemyNumberRanges = new int[6 , 2];
-
-                // Stringer number ranges
-                enemyNumberRanges[0, 0] = 0;
-                enemyNumberRanges[0, 1] = 3;
-                enemyNumberRanges[1, 0] = 24;
-                enemyNumberRanges[1, 1] = 39;
-
-                // Boss Galaga number ranges
-                enemyNumberRanges[2, 0] = 8;
-                enemyNumberRanges[2, 1] = 11;
-
-                // Goei number ranges
-                enemyNumberRanges[3, 0] = 4;
-                enemyNumberRanges[3, 1] = 7;
-                enemyNumberRanges[4, 0] = 12;
-                enemyNumberRanges[4, 1] = 15;
-                enemyNumberRanges[5, 0] = 16;
-                enemyNumberRanges[5, 1] = 23;
 
                 currentPlayer = 1;
                 PlayerDead = false;
@@ -181,12 +173,11 @@ public class GameManager : MonoBehaviour
                 int alienCount = spawnerController.Aliens.Count;
 
                 currAliensAttacking = new List<GameObject>();
-                Debug.Log(currentPlayer + "'s Aliens Attack!");
                 StartCoroutine(AlienAttack());
 
                 break;
             case GameState.SwitchPlayer:
-                ClearAliens();
+                //ClearAliens();
 
                 if (currentPlayer == 1) {
                     currentPlayer++;
@@ -197,7 +188,20 @@ public class GameManager : MonoBehaviour
                 if (lives[currentPlayer - 1] > 0) {
                     UpdateGameState(GameState.DisplayStageText);
                 } else {
-                    UpdateGameState(GameState.GameOver);
+                    // If the other player has zero lives, check the current player
+                    // to see if the player still has lives to play.
+                    if (currentPlayer == 1) {
+                        currentPlayer++;
+                    } else {
+                        currentPlayer--;
+                    }
+
+                    if (lives[currentPlayer - 1] > 0) {
+                        playerCount--;
+                        UpdateGameState(GameState.DisplayStageText);
+                    } else {
+                        UpdateGameState(GameState.GameOver);
+                    }
                 }
 
                 break;
@@ -233,6 +237,28 @@ public class GameManager : MonoBehaviour
                 float newAlienSpeed = randomizer.Next(-1, 2);
                 spawnerController.increaseAlienSpeed(newAlienSpeed);
                 */
+                break;
+            case GameState.PlayerDeath:
+                spawnerController.StopAllCoroutines();
+                Spawning = false;
+                StopAllCoroutines();
+
+                int alienCounter = spawnerController.Aliens.Count;
+                if (alienCounter == 0) {
+                    currentStage[currentPlayer - 1]++;
+                    stageCompleted = true;
+                }
+
+                ClearAliens();
+
+                if (playerCount == 2) {
+                    UpdateGameState(GameState.SwitchPlayer);
+                } else if (lives[currentPlayer - 1] > 0 || training) {
+                    UpdateGameState(GameState.DisplayStageText);
+                } else {
+                    UpdateGameState(GameState.GameOver);
+                }
+
                 break;
             default:
                 break;
@@ -334,16 +360,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Get the current amount of aliens that are in the grid.
+    /// </summary>
+    /// <returns>An integer that represents the current amount of aliens.</returns>
     public int getAlienCount() {
         GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
         return spawner.transform.childCount;
     }
 
+    /// <summary>
+    /// Check to see if the grid contains no aliens.
+    /// </summary>
+    /// <returns>True if the grid is empty.</returns>
     public bool checkGridEmpty() {
         GameObject spawner = GameObject.FindGameObjectWithTag("Spawner");
         return spawner.transform.childCount == 0;
     }
 
+    /// <summary>
+    /// Removes a life from the current player.
+    /// </summary>
     public void LoseLife() {
         lives[currentPlayer - 1]--;
         UpdateLivesTextField();
@@ -420,22 +457,25 @@ public class GameManager : MonoBehaviour
             }
             
             playerSpawned = true;
-
-            
         } 
         
         if (PlayerDead) {
             PlayerDead = false;
             // Displays the ready state text.
-            if (lives.Length == 2) {
+            if (playerCount == 2) {
                 MenuManager.Instance.UpdateCurrentPlayerTextField(currentPlayer);
                 MenuManager.Instance.currentPlayerText.gameObject.SetActive(true);
             }
-            
-            MenuManager.Instance.UpdateCurrentStageTextField();
+
+            if (!stageCompleted) {
+                MenuManager.Instance.UpdateCurrentStageTextField();
+            }
+
             if (!playerSpawned && !GameManager.Instance.training) {
                 SpawnPlayer();
             }
+
+            stageCompleted = false;
         }
 
         MenuManager.Instance.currentStageText.gameObject.SetActive(true);
@@ -500,35 +540,6 @@ public class GameManager : MonoBehaviour
                     currAliensAttacking.Add(alien);
                 }
             }
-            
-            if (PlayerDead) {
-                if (training) {
-                    yield break;
-                }
-
-                // If there are two players playing, we want to switch
-                // to the current player.
-                if (playerCount == 2 && !training) {
-                    UpdateGameState(GameState.SwitchPlayer);
-                    yield break;
-                }
-
-                // If the current single player has lives, we
-                // must reset the alien positions, update the live counter text
-                // field, and update the game state to display the stage.
-                if (lives[currentPlayer - 1] > 0 && !training) {
-                    // Reset the aliens to go back to their grid position.
-                    //ResetAliens(currAliensAttacking);
-                    
-                    ClearAliens();
-                    UpdateGameState(GameState.DisplayStageText);
-
-                    yield break;
-                }
-
-                UpdateGameState(GameState.GameOver);
-                yield break;
-            }
 
             // Timeout before letting another alien attack.
             yield return new WaitForSeconds(2f);
@@ -541,7 +552,6 @@ public class GameManager : MonoBehaviour
         }
 
         if (training) {
-            //UpdateGameState(GameState.ResetEpisode);
             PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
             playerAgent.AddReward(1f);
             playerAgent.EndEpisode();
@@ -607,6 +617,7 @@ public enum GameState
     DisplayStageText,
     LoadEnemies,
     EnemiesAttack,
+    PlayerDeath,
     SwitchPlayer,
     GameOver,
     ResetEpisode

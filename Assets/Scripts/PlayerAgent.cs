@@ -67,8 +67,6 @@ public class PlayerAgent : Agent
 
         AddReward(-1f / MaxStep);
 
-        Debug.Log("Player Shoot Input: " + shoot);
-
         // Controls the player by the given actions.
         playerController.HorizontalInput = horizontalInput;
 

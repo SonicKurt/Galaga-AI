@@ -11,6 +11,7 @@
  * All rights reserved.
  *********************************************************/
 
+using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -22,9 +23,14 @@ public class AlienAgent : Agent
     private AlienController alienController;
     private BehaviorParameters behaviorParameters;
 
+    [SerializeField]
+    private NNModel averageModel;
+
+    [SerializeField]
+    private NNModel advancedModel;
+
     public override void Initialize()
     {
-
         GameObject parent = transform.parent.gameObject;
         alienController = parent.GetComponent<AlienController>();
         behaviorParameters = GetComponent<BehaviorParameters>();
@@ -46,7 +52,7 @@ public class AlienAgent : Agent
         bool attack = alienController.Attack;
         
         if (attack) {
-            float horizontalInput = actions.ContinuousActions[0];// <= 12 ? actions.DiscreteActions[0] : -12;
+            float horizontalInput = actions.ContinuousActions[0];
             bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
             
             alienController.HorizontalInput = horizontalInput;
@@ -56,4 +62,26 @@ public class AlienAgent : Agent
             }
         }
     }
+
+    /// <summary>
+    /// Changes the Neural Network Model for the Alien Agent.
+    /// </summary>
+    /// <param name="modelType">The model you want to switch to.</param>
+    public void ChangeModel(AgentType modelType) {
+        if (modelType == AgentType.Average) {
+            Debug.Log("Switching to Average Model.");
+            SetModel("Alien", averageModel);
+        } else {
+            Debug.Log("Switching to Advanced Model.");
+            SetModel("Alien", advancedModel);
+        }
+
+        behaviorParameters.BehaviorType = BehaviorType.InferenceOnly;
+    }
 }
+
+public enum AgentType {
+    Beginner,
+    Average,
+    Advanced
+};

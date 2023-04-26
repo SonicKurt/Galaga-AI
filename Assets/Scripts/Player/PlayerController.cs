@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour {
 
     private float startTime;
     private bool reload;
+    private bool attacked;
 
     private PlayerAgent agent;
 
@@ -67,6 +68,7 @@ public class PlayerController : MonoBehaviour {
         startTime = Time.time + shootDelay;
         reload = true;
         agent = GetComponentInChildren<PlayerAgent>();
+        attacked = false;
     }
 
     // Update is called once per frame
@@ -93,9 +95,10 @@ public class PlayerController : MonoBehaviour {
     /// alien or one of its bullets.</param>
     private void OnTriggerEnter(Collider other)
     {
-         if (other.tag == "Bullet") {
+         if (other.tag == "Bullet" && !attacked) {
             BulletController bulletController = other.GetComponent<BulletController>();
             if (bulletController.Type == BulletType.Alien) {
+                attacked = true;
                 GameObject alien = bulletController.Shooter;
 
                 // If the alien's bullet attacked the player in training mode,
@@ -118,17 +121,19 @@ public class PlayerController : MonoBehaviour {
                     Destroy(other.gameObject);
                     GameManager.Instance.PlayerDead = true;
                     GameManager.Instance.LoseLife();
+                    GameManager.Instance.UpdateGameState(GameState.PlayerDeath);
                     Destroy(this.gameObject);
                 }
-                
 
                 return;
-            }   
+            }
         }
 
         if (other.tag == "Goei"
             || other.tag == "Stringer"
-            || other.tag == "BossGalaga") {
+            || other.tag == "BossGalaga"
+            && !attacked) {
+            attacked = true;
             AlienController alienController = other.gameObject.GetComponent<AlienController>();
 
             // Gets reward if the alien crashes into player.
@@ -148,6 +153,7 @@ public class PlayerController : MonoBehaviour {
                 playerAgent.EndEpisode();
             } else {
                 GameManager.Instance.LoseLife();
+                GameManager.Instance.UpdateGameState(GameState.PlayerDeath);
                 Destroy(this.gameObject);
             }
 
