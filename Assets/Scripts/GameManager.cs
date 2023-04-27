@@ -205,7 +205,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 break;
-            case GameState.GameOver:
+            case GameState.GameOver:                
                 // Sets the high score if it has been beaten.
                 int bestScore = scores[0];
 
@@ -219,24 +219,13 @@ public class GameManager : MonoBehaviour
                     PlayerPrefs.SetInt("High Score", bestScore);
                 }
 
-                // Destory this scene and restart to the main menu.
-                Destroy(MenuManager.Instance.canvas.gameObject);
-                Destroy(MenuManager.Instance.gameObject);
-                Destroy(this.gameObject);
+                StartCoroutine(DisplayGameOver());
 
-                SceneManager.LoadScene(0);
-                
                 break;
             case GameState.ResetEpisode:
                 lives[currentPlayer - 1] = initialLives;
                 ClearAliens();
 
-
-                /*
-                Random randomizer = new Random();
-                float newAlienSpeed = randomizer.Next(-1, 2);
-                spawnerController.increaseAlienSpeed(newAlienSpeed);
-                */
                 break;
             case GameState.PlayerDeath:
                 spawnerController.StopAllCoroutines();
@@ -265,6 +254,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggles whether to have the player agent play the game.
+    /// </summary>
+    /// <param name="toggle">The toggle switch having the player agent enabled.</param>
     public void TogglePlayerAgent(bool toggle) {
         if (toggle) {
             playerAgent.SetActive(true);
@@ -384,6 +377,29 @@ public class GameManager : MonoBehaviour
     public void LoseLife() {
         lives[currentPlayer - 1]--;
         UpdateLivesTextField();
+    }
+
+    /// <summary>
+    /// Displays the Game Over text.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator DisplayGameOver() {
+        GameObject gameOverSoundObj = GameObject.FindGameObjectWithTag("GameOverSound");
+        AudioSource gameOverSound = gameOverSoundObj.GetComponent<AudioSource>();
+        gameOverSound.Play();
+
+        MenuManager.Instance.EnableGameOver();
+
+        yield return new WaitForSeconds(13f);
+
+        gameOverSound.Stop();
+
+        // Destory this scene and restart to the main menu.
+        Destroy(MenuManager.Instance.canvas.gameObject);
+        Destroy(MenuManager.Instance.gameObject);
+        Destroy(this.gameObject);
+
+        SceneManager.LoadScene(0);
     }
 
     /// <summary>
