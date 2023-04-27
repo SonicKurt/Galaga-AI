@@ -117,6 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddca33b8a6b7ba145a60e5cb6a9d9ac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossGalagaChangeMaterial: {fileID: 2100000, guid: 564673d8d795740d2939d5de97bf4459, type: 2}
   bulletPrefab: {fileID: 7531242057417417011, guid: 37686e1231ae842399b5ecba06f2ce4e, type: 3}
 --- !u!65 &3733929901149353626
 BoxCollider:
