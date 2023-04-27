@@ -19,6 +19,9 @@ using Random = System.Random;
 
 public class AlienController : MonoBehaviour
 {
+    // Boss Galaga Hit Color Change Material
+    public Material bossGalagaChangeMaterial;
+
     // The alien's grid position.
     private Vector3 spawnPos;
 
@@ -282,6 +285,7 @@ public class AlienController : MonoBehaviour
                 // Other aliens (i.e., Goeis or Stringers) only take one hit.
                 if (Type == EnemyType.BossGalaga && hitCounter != 1) {
                     hitCounter++;
+                    GetComponent<Renderer>().material = bossGalagaChangeMaterial;
                 } else {
                     GameManager.Instance.UpdateScore(type, attack);
                     DestoryAlien();
