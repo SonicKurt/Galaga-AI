@@ -8,8 +8,11 @@ This is the home for the development of Galaga AI. We all know and love the orig
 This project was made for the CS-4430 Machine Learning and Intelligent Agents course at Cedarville University.
 ## Game Controls
 Movement - WASD or Direction Keys
+<br>
 Shoot - W or Space
+<br>
 Escape - Quit the Game
+<br>
 \` - Open the Developer Menu (Main Menu Control Only)
 
 ## Copyrights
