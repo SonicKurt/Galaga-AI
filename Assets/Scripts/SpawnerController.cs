@@ -116,14 +116,12 @@ public class SpawnerController : MonoBehaviour
 
         int stage = GameManager.Instance.getCurrentStage();
         bool attackOnLoad = false;
-        bool changeModel = false;
         AgentType alienAgentType = AgentType.Beginner; 
 
         // For every three stages, increase the alien's speed.
         if (stage % 3 == 0) {
             IncreaseAlienSpeed();
             attackOnLoad = true;
-            changeModel = true;
         }
 
         if (stage >= 3) {
