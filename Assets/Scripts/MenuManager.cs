@@ -40,6 +40,10 @@ public class MenuManager : MonoBehaviour {
     // Main Menu Panel from the Main User Interface.
     private GameObject mainMenuPanel;
 
+    // Game Over Panel.
+    [SerializeField]
+    private GameObject gameOverPanel;
+
     // Developer Menu Panel.
     public GameObject developerPanel;
 
@@ -55,17 +59,13 @@ public class MenuManager : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         mainMenuPanel = GameObject.FindGameObjectWithTag("MainMenu");
-
+        
         // Turns off stage and live counter text fields when in playing mode.
         if (!GameManager.Instance.training) {
+            gameOverPanel.SetActive(false);
             stageCounterText.gameObject.SetActive(false);
             liveCounterText.gameObject.SetActive(false);
         }
-    }
-
-    // Update is called once per frame
-    void Update() {
-
     }
 
     /// <summary>
@@ -194,5 +194,9 @@ public class MenuManager : MonoBehaviour {
     /// </summary>
     public void EnableMainMenu() {
         mainMenuPanel.SetActive(true);
+    }
+
+    public void EnableGameOver() {
+        gameOverPanel.SetActive(true);
     }
 }

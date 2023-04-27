@@ -66,16 +66,6 @@ public class SpawnerController : MonoBehaviour
         timeDecrement = 0;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-       
-    }
-
-    private void Update()
-    {
-
-    }
 
     public void SpawnAliens()
     {
@@ -107,31 +97,18 @@ public class SpawnerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Increases the alien speed.
+    /// Increases the alien's speed and bullet speed.
     /// </summary>
-    /// <param name="newAlienSpeed">The amount of speed you want to increase.</param>
-    public void increaseAlienSpeed(float newAlienSpeed) {
-        Debug.Log("Alien Speed: " + (newAlienSpeed + alienSpeed));
-        if (alienSpeed + newAlienSpeed >= 6 && alienSpeed + newAlienSpeed <= 9) {
-            alienSpeed += newAlienSpeed;
-            if (newAlienSpeed == -1) {
-                alienBulletSpeed += newAlienSpeed - 1;
-            }
-
-            if (newAlienSpeed == 1) {
-                alienBulletSpeed += newAlienSpeed + 1;
-            }
-            
-            timeDecrement += newAlienSpeed;
-        }
-    }
-
     private void IncreaseAlienSpeed() {
         alienSpeed += alienSpeedIncrements;
         alienBulletSpeed += 1f;
         timeDecrement += 0.25f;
     }
 
+    /// <summary>
+    /// Loads the aliens within five phases.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator loadAliens()
     {
         // Start in the first phase of loading.
@@ -147,12 +124,14 @@ public class SpawnerController : MonoBehaviour
             IncreaseAlienSpeed();
             attackOnLoad = true;
             changeModel = true;
+        }
 
-            if (stage % 10 == 0) {
-                alienAgentType = AgentType.Advanced;
-            } else {
-                alienAgentType = AgentType.Average;
-            }
+        if (stage >= 3) {
+            alienAgentType = AgentType.Average;
+        }
+
+        if (stage >= 10) {
+            alienAgentType = AgentType.Advanced;
         }
 
         while (enemyState != LoadEnemyState.Done)
@@ -198,8 +177,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0, attackOnLoad, changeModel, alienAgentType));
-                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Stringer, 1, attackOnLoad, changeModel, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Goei, 0, attackOnLoad, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad, EnemyType.Stringer, 1, attackOnLoad, alienAgentType));
 
                     yield return new WaitForSeconds(7f - timeDecrement);
                     enemyState = LoadEnemyState.Phase2;
@@ -242,8 +221,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0, attackOnLoad, changeModel, alienAgentType));
-                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.BossGalaga, 1, attackOnLoad, changeModel, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.Goei, 0, attackOnLoad, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad2, EnemyType.BossGalaga, 1, attackOnLoad, alienAgentType));
 
                     yield return new WaitForSeconds(7f - timeDecrement);
                     enemyState = LoadEnemyState.Phase3;
@@ -282,8 +261,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0, attackOnLoad, changeModel, alienAgentType));
-                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 1, attackOnLoad, changeModel, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 0, attackOnLoad, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad3, EnemyType.Goei, 1, attackOnLoad, alienAgentType));
 
                     yield return new WaitForSeconds(8f - timeDecrement);
 
@@ -322,8 +301,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0, attackOnLoad, changeModel, alienAgentType));
-                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 1, attackOnLoad, changeModel, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 0, attackOnLoad, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad4, EnemyType.Stringer, 1, attackOnLoad, alienAgentType));
 
                     yield return new WaitForSeconds(8f - timeDecrement);
 
@@ -363,8 +342,8 @@ public class SpawnerController : MonoBehaviour
                         aliens.Add(alien);
                     }
 
-                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0, attackOnLoad, changeModel, alienAgentType));
-                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1, attackOnLoad, changeModel, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 0, attackOnLoad, alienAgentType));
+                    StartCoroutine(launchAliens(aliensToLoad5, EnemyType.Stringer, 1, attackOnLoad, alienAgentType));
 
                     yield return new WaitForSeconds(9f - timeDecrement);
 
@@ -385,7 +364,7 @@ public class SpawnerController : MonoBehaviour
     /// <param name="launchPad">The launch pad number to launch from.</param>
     /// <returns>The amount of time to sleep before launching the next alien.</returns>
     IEnumerator launchAliens(List<GameObject> alienLoadDeck, EnemyType enemyType, int launchPad,
-        bool attackOnLoad, bool changeModel, AgentType modelType)
+        bool attackOnLoad, AgentType modelType)
     {
         Random randomizer = new Random();
 
@@ -405,7 +384,7 @@ public class SpawnerController : MonoBehaviour
                 if (alienController.Type == enemyType && alienController.LaunchPad == launchPad) {
                     alienController.ReadyToLaunch = true;
 
-                    if (alienAgent != null && changeModel) {
+                    if (alienAgent != null && modelType != AgentType.Beginner) {
                         alienAgent.ChangeModel(modelType);
                     }
 
