@@ -39,7 +39,7 @@ public class AlienAgent : Agent
     // Testing purposes for random input to move the aliens horizontally.
     public override void Heuristic(in ActionBuffers actionsOut) {
         Random random = new Random();
-        int horizontalInput = random.Next(-12, 13);
+        int horizontalInput = random.Next(-6, 7);
         int shoot = random.Next(0, 2);
 
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;

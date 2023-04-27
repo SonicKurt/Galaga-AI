@@ -1321,8 +1321,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -23.89993, y: 98.9}
-  m_SizeDelta: {x: 160, y: 20}
+  m_AnchoredPosition: {x: -12.8, y: 98.9}
+  m_SizeDelta: {x: 181.56, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1919768573
 MonoBehaviour:
@@ -1639,6 +1639,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1434568846}
+    - target: {fileID: 5830483368979074259, guid: c7d50ae7f6a512f4a98815cec4806213, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5830483368979074259, guid: c7d50ae7f6a512f4a98815cec4806213, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5830483368979074259, guid: c7d50ae7f6a512f4a98815cec4806213, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 125
+      objectReference: {fileID: 0}
     - target: {fileID: 5830483369168098572, guid: c7d50ae7f6a512f4a98815cec4806213, type: 3}
       propertyPath: m_CullTransparentMesh
       value: 1

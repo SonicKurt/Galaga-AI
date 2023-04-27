@@ -231,6 +231,7 @@ public class GameManager : MonoBehaviour
                 spawnerController.StopAllCoroutines();
                 Spawning = false;
                 StopAllCoroutines();
+                CheckScore();
 
                 int alienCounter = spawnerController.Aliens.Count;
                 if (alienCounter == 0) {
@@ -567,6 +568,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        CheckScore();
+
         if (training) {
             PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
             playerAgent.AddReward(1f);
@@ -609,7 +612,7 @@ public class GameManager : MonoBehaviour
                 currAliensAttacking.RemoveAt(numOfAliensAttacking);
             }
             // If training is enabled, break this loop. 
-            else if (training) {
+            else {
                 break;
             }
         }
