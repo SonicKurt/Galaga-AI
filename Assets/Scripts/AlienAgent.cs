@@ -11,6 +11,7 @@
  * All rights reserved.
  *********************************************************/
 
+using Unity.Barracuda;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -22,6 +23,12 @@ public class AlienAgent : Agent
     private AlienController alienController;
     private BehaviorParameters behaviorParameters;
 
+    [SerializeField]
+    private NNModel averageModel;
+
+    [SerializeField]
+    private NNModel advancedModel;
+
     public override void Initialize()
     {
         GameObject parent = transform.parent.gameObject;
@@ -32,11 +39,12 @@ public class AlienAgent : Agent
     // Testing purposes for random input to move the aliens horizontally.
     public override void Heuristic(in ActionBuffers actionsOut) {
         Random random = new Random();
-        int horizontalInput = random.Next(-12, 13);
+        int horizontalInput = random.Next(-6, 7);
         int shoot = random.Next(0, 2);
 
+        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         ActionSegment<int> actions = actionsOut.DiscreteActions;
-        actions[0] = horizontalInput;
+        continuousActions[0] = horizontalInput;
         actions[1] = shoot;
     }
     
@@ -44,7 +52,7 @@ public class AlienAgent : Agent
         bool attack = alienController.Attack;
         
         if (attack) {
-            float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
+            float horizontalInput = actions.ContinuousActions[0];
             bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
             
             alienController.HorizontalInput = horizontalInput;
@@ -54,4 +62,26 @@ public class AlienAgent : Agent
             }
         }
     }
+
+    /// <summary>
+    /// Changes the Neural Network Model for the Alien Agent.
+    /// </summary>
+    /// <param name="modelType">The model you want to switch to.</param>
+    public void ChangeModel(AgentType modelType) {
+        if (modelType == AgentType.Average) {
+            Debug.Log("Switching to Average Model.");
+            SetModel("Alien", averageModel);
+        } else {
+            Debug.Log("Switching to Advanced Model.");
+            SetModel("Alien", advancedModel);
+        }
+
+        behaviorParameters.BehaviorType = BehaviorType.InferenceOnly;
+    }
 }
+
+public enum AgentType {
+    Beginner,
+    Average,
+    Advanced
+};

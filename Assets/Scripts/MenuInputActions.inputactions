@@ -31,6 +31,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "DeveloperMenuToggle",
+                    "type": "Button",
+                    "id": "5c4359a9-9347-4ca7-8332-a733c5cc1fd0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -86,6 +95,17 @@
                     "processors": "",
                     "groups": "Keyboard;GamePad",
                     "action": "Exit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47f8d092-7e7f-44e6-9030-125c6f2d2b42",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "DeveloperMenuToggle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

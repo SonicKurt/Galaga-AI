@@ -33,9 +33,19 @@ public class PlayerAgent : Agent
     }
 
     public override void OnEpisodeBegin() {
-        parent.transform.position = new Vector3(-1.1f, 0f, -4f);
-        GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
-        GameManager.Instance.UpdateGameState(GameState.LoadEnemies);    
+        if (GameManager.Instance.training) {
+            parent.transform.position = new Vector3(-1.1f, 0f, -4f);
+            if (!GameManager.Instance.checkGridEmpty() || GameManager.Instance.PlayerDead) {
+                GameManager.Instance.removeAllBulletsFromScene();
+                GameManager.Instance.StopAllCoroutines();
+                GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+            }
+
+            GameManager.Instance.PlayerDead = false;
+            GameManager.Instance.UpdateGameState(GameState.DisplayStageText);
+            GameManager.Instance.UpdateGameState(GameState.LoadEnemies);
+        }
+        
     }
 
     // Testing purposes for random input instead of neural network input.
@@ -44,14 +54,18 @@ public class PlayerAgent : Agent
         int horizontalInput = random.Next(-12, 13);
         int shoot = random.Next(0, 2);
 
+        ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         ActionSegment<int> actions = actionsOut.DiscreteActions;
-        actions[0] = horizontalInput;
+
+        continuousActions[0] = horizontalInput;
         actions[1] = shoot;
     }
 
     public override void OnActionReceived(ActionBuffers actions) {
-        float horizontalInput = actions.DiscreteActions[0] <= 12 ? actions.DiscreteActions[0] : -12;
+        float horizontalInput = actions.ContinuousActions[0]; // <= 12 ? actions.DiscreteActions[0] : -12;
         bool shoot = actions.DiscreteActions[1] == 1 ? true : false;
+
+        AddReward(-1f / MaxStep);
 
         // Controls the player by the given actions.
         playerController.HorizontalInput = horizontalInput;

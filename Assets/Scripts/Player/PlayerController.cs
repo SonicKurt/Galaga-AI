@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour {
 
     private float startTime;
     private bool reload;
+    private bool attacked;
+
+    private PlayerAgent agent;
 
     // Indicate that the player is in training mode.
     public bool Training { get; set; }
@@ -40,6 +43,7 @@ public class PlayerController : MonoBehaviour {
             GameObject projectile = Instantiate(projectileToSpawn, transform.position + new Vector3(0, 0, 1), Quaternion.Euler(0, 0, 0));
             BulletController bulletController = projectile.GetComponent<BulletController>();
             bulletController.Type = BulletType.Player;
+            bulletController.Shooter = this.gameObject;
             reload = true;
             startTime = Time.time + shootDelay;
         }
@@ -63,15 +67,13 @@ public class PlayerController : MonoBehaviour {
         shootSoundEffect = GetComponent<AudioSource>();
         startTime = Time.time + shootDelay;
         reload = true;
+        agent = GetComponentInChildren<PlayerAgent>();
+        attacked = false;
     }
 
     // Update is called once per frame
     void Update() {
         
-        if (Training) {
-                
-        }
-
         float horizontalMovement = HorizontalInput * movementSpeed * Time.deltaTime;
         Vector3 pos = transform.position;
 
@@ -82,7 +84,7 @@ public class PlayerController : MonoBehaviour {
         if (Time.time > startTime) {
             reload = false;
         }
-
+        
     }
 
     /// <summary>
@@ -93,9 +95,10 @@ public class PlayerController : MonoBehaviour {
     /// alien or one of its bullets.</param>
     private void OnTriggerEnter(Collider other)
     {
-         if (other.tag == "Bullet") {
+         if (other.tag == "Bullet" && !attacked) {
             BulletController bulletController = other.GetComponent<BulletController>();
             if (bulletController.Type == BulletType.Alien) {
+                attacked = true;
                 GameObject alien = bulletController.Shooter;
 
                 // If the alien's bullet attacked the player in training mode,
@@ -106,40 +109,51 @@ public class PlayerController : MonoBehaviour {
                         alienAgent.AddReward(1f);
                     }
 
-                    GameManager.Instance.removeAllBulletsFromScene();
                     Destroy(other.gameObject);
                     GameManager.Instance.PlayerDead = true;
 
                     PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
-                    GameManager.Instance.StopAllCoroutines();
-                    GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                    //GameManager.Instance.StopAllCoroutines();
+                    //GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                    playerAgent.AddReward(-0.5f);
                     playerAgent.EndEpisode();
                 } else {
                     Destroy(other.gameObject);
                     GameManager.Instance.PlayerDead = true;
+                    GameManager.Instance.LoseLife();
+                    GameManager.Instance.UpdateGameState(GameState.PlayerDeath);
                     Destroy(this.gameObject);
                 }
-                
 
                 return;
-            }   
+            }
         }
 
         if (other.tag == "Goei"
             || other.tag == "Stringer"
-            || other.tag == "BossGalaga") {
+            || other.tag == "BossGalaga"
+            && !attacked) {
+            attacked = true;
             AlienController alienController = other.gameObject.GetComponent<AlienController>();
+
+            // Gets reward if the alien crashes into player.
+            AlienAgent alienAgent = other.gameObject.GetComponentInChildren<AlienAgent>();
+            alienAgent.AddReward(1f);
+
             alienController.DestoryAlien();
             GameManager.Instance.PlayerDead = true;
 
             // The player agent needs to be present at all times.
             if (GameManager.Instance.training) {
                 PlayerAgent playerAgent = GetComponentInChildren<PlayerAgent>();
-                GameManager.Instance.StopAllCoroutines();
-                GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
+                //GameManager.Instance.StopAllCoroutines();
+                //GameManager.Instance.UpdateGameState(GameState.ResetEpisode);
                 GameManager.Instance.removeAllBulletsFromScene();
+                playerAgent.AddReward(-0.5f);
                 playerAgent.EndEpisode();
             } else {
+                GameManager.Instance.LoseLife();
+                GameManager.Instance.UpdateGameState(GameState.PlayerDeath);
                 Destroy(this.gameObject);
             }
 

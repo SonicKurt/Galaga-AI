@@ -184,6 +184,7 @@ public class AlienController : MonoBehaviour
         if (readyToLaunch)
         {
             float step = speed * Time.deltaTime;
+            
             transform.position = Vector3.MoveTowards(transform.position, spawnPos, step);
 
             if (Vector3.Distance(transform.position, spawnPos) < 0.001f)
@@ -203,9 +204,7 @@ public class AlienController : MonoBehaviour
 
                 attack = !resetToPosition;
 
-                //ClearBullets();
                 timesShot = 0;
-                
             } else {
                 Vector3 pos = transform.position;
 
@@ -213,14 +212,6 @@ public class AlienController : MonoBehaviour
                 pos.x = Mathf.Clamp(pos.x, -12f, 12f);
 
                 transform.position = pos;
-
-                if (!GameManager.Instance.training) {
-                    int timeToShoot = randomizer.Next(0, 2);
-                    if (timeToShoot == 1 && timesShot == 0) {
-                        StartCoroutine(Shoot());
-                        timesShot++;
-                    }
-                }
             }
         }
 
@@ -252,23 +243,6 @@ public class AlienController : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantiate new bullet objects for the alien.
-    /// </summary>
-    /// <returns>A time to timeout to instantiate the next bullet</returns>
-    private IEnumerator Shoot() {
-        yield return new WaitForSeconds(0.7f);
-        int amountOfBullets = randomizer.Next(1, 4);
-
-        for (int i = 0; i < amountOfBullets; i++) {
-            GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            BulletController bulletController = bullet.GetComponent<BulletController>();
-            bulletController.Shooter = this.gameObject;
-            bulletController.Type = BulletType.Alien;
-            yield return new WaitForSeconds(0.5f);
-        }
-    }
-
-    /// <summary>
     /// Clears the bullets from the scene if the player had died.
     /// </summary>
     public void ClearBullets() {
@@ -287,8 +261,7 @@ public class AlienController : MonoBehaviour
         }
 
         GameManager.Instance.RemoveAlien(this.gameObject);
-        
-        dieSoundEffect.Play();
+
         Destroy(this.gameObject);
     }
 
@@ -302,7 +275,7 @@ public class AlienController : MonoBehaviour
 
                 if (player != null && GameManager.Instance.training) {
                     PlayerAgent playerAgent = player.GetComponentInChildren<PlayerAgent>();
-                    playerAgent.AddReward(1f);
+                    playerAgent.AddReward(1f / GameManager.Instance.getAlienCount());
                 }
 
                 // Boss Galagas take two hits to be destroyed.
@@ -312,6 +285,10 @@ public class AlienController : MonoBehaviour
                 } else {
                     GameManager.Instance.UpdateScore(type, attack);
                     DestoryAlien();
+                }
+
+                if (!GameManager.Instance.training) {
+                    GameManager.Instance.PlayAlienDeathSound();
                 }
 
                 Destroy(other.gameObject);
