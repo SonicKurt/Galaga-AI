@@ -56,6 +56,9 @@ public class GameManager : MonoBehaviour
 
     private bool stageCompleted;
 
+    // Checks to see if the player has reached to gain the first extra life.
+    private bool initalExtraLifeGained;
+
     private int[,] enemyNumberRanges;
 
     // The amount of aliens to attack one time.
@@ -86,6 +89,7 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         highScore = PlayerPrefs.GetInt("High Score", 30000);
+        initalExtraLifeGained = false;
 
         if (training) {
             player.SetActive(false);
@@ -587,11 +591,12 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Checks score to see if the current player has gained an extra life.
     /// </summary>
-    private void CheckScore() {
-        if (scores[currentPlayer - 1] == 20000
-            || scores[currentPlayer - 1] % 60000 == 0) {
-            lives[currentPlayer - 1]++;
+    public void CheckScore() {
+        if ((scores[currentPlayer - 1] >= 20000 && !initalExtraLifeGained)
+            || (scores[currentPlayer - 1] % 60000 == 0 && scores[currentPlayer - 1] != 0)) {
+            lives[currentPlayer - 1] += 1;
             UpdateLivesTextField();
+            initalExtraLifeGained = true;
         }
     }
 

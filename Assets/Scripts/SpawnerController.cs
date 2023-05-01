@@ -134,6 +134,8 @@ public class SpawnerController : MonoBehaviour
 
         while (enemyState != LoadEnemyState.Done)
         {
+            GameManager.Instance.CheckScore();
+
             if (GameManager.Instance.PlayerDead) {
                 yield break;
             }
